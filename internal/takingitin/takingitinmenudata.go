@@ -13,13 +13,13 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 	}
 	data := framework.PixelMenuData{
 		BackgroundColor: colornames.Midnightblue,
-		MenuTextColor: colornames.Darkred,
+		MenuTextColor: colornames.Whitesmoke,
 		BackgroundImageTag: "menubg",
 		MenuFontTag: "menu",
 		TitleFontTag: "menutitle",
 		MenuOptions: options,
-		NewGameSceneName: "room",
-		AboutSceneName: "debug",
+		NewGameSceneName: "intro",
+		AboutSceneName: "about",
 	}
 	return data
 }

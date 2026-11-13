@@ -13,8 +13,24 @@ type TakingItInWashingScene struct {
 }
 
 func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
-	scene.leftHand = NewTakingItInHandObject(game, "righthand", pixel.V(100, 100), pixel.KeyW, pixel.KeyS, pixel.KeyD, pixel.KeyA)
-	scene.rightHand = NewTakingItInHandObject(game, "righthand", pixel.V(800, 100), pixel.KeyI, pixel.KeyK, pixel.KeyL, pixel.KeyJ)
+	scene.leftHand = NewTakingItInHandObject(
+		game, 
+		[]string{"lefthand1", "lefthand2", "lefthand3", "lefthand4"}, 
+		pixel.V(100, 100), 
+		pixel.KeyW, 
+		pixel.KeyS, 
+		pixel.KeyD, 
+		pixel.KeyA,
+		pixel.KeyLeftShift)
+	scene.rightHand = NewTakingItInHandObject(
+		game, 
+		[]string{"righthand1", "righthand2", "righthand3", "righthand4"},
+		pixel.V(800, 100), 
+		pixel.KeyI, 
+		pixel.KeyK, 
+		pixel.KeyL, 
+		pixel.KeyJ,
+		pixel.KeyRightShift)
 }
 
 func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController, win *opengl.Window, dt float64) {

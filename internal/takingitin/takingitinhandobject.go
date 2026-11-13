@@ -12,7 +12,8 @@ const FRICTION = 0.3
 const DEFAULT_SCALE = 0.4
 
 type TakingItInHandObject struct {
-	sprite		*pixel.Sprite
+	sprites		[]*pixel.Sprite
+	sprite		int
 	pos			pixel.Matrix
 	speed		pixel.Vec
 
@@ -20,16 +21,18 @@ type TakingItInHandObject struct {
 	downBtn		pixel.Button
 	rightBtn	pixel.Button
 	leftBtn		pixel.Button
+	closeBtn	pixel.Button
 }
 
 func NewTakingItInHandObject(
 	game *framework.PixelGameController,
-	spriteName string, 
+	spriteNames []string, 
 	startPos pixel.Vec, 
 	upBtn pixel.Button,
 	downBtn pixel.Button,
 	rightBtn pixel.Button,
-	leftBtn pixel.Button) (*TakingItInHandObject) {
+	leftBtn pixel.Button,
+	closeBtn pixel.Button) (*TakingItInHandObject) {
 
 	hand := TakingItInHandObject{
 		pos: pixel.IM.Scaled(pixel.V(0, 0), DEFAULT_SCALE).Moved(startPos),
@@ -38,14 +41,18 @@ func NewTakingItInHandObject(
 		downBtn: downBtn,
 		rightBtn: rightBtn,
 		leftBtn: leftBtn,
+		closeBtn: closeBtn,
 	}
-	pic := game.Resources.GetPicture(spriteName)
-	hand.sprite = pixel.NewSprite(pic, pic.Bounds())
+	for i := 0; i < len(spriteNames); i++ {
+		pic := game.Resources.GetPicture(spriteNames[i])
+		hand.sprites = append(hand.sprites, pixel.NewSprite(pic, pic.Bounds()))
+	}
+	hand.sprite = 0
 	return &hand
 }
 
 func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
-	hand.sprite.Draw(win, hand.pos)
+	hand.sprites[hand.sprite].Draw(win, hand.pos)
 }
 
 func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
@@ -93,6 +100,17 @@ func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
 		hand.speed.Y = -1.0 * MAX_SPEED
 	} else if hand.speed.Y > MAX_SPEED {
 		hand.speed.Y = MAX_SPEED
+	}
+
+	if win.Pressed(hand.closeBtn) {
+		hand.sprite++
+	} else {
+		hand.sprite--
+	}
+	if hand.sprite >= len(hand.sprites) {
+		hand.sprite = len(hand.sprites) - 1
+	} else if hand.sprite < 0 {
+		hand.sprite = 0
 	}
 	// Now move the hand
 	hand.pos = hand.pos.Moved(hand.speed)

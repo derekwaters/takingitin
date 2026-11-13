@@ -7,6 +7,7 @@ import (
 	"image/color"
 
 	_ "image/jpeg"
+	_ "image/png"
 
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/ext/text"

@@ -2,7 +2,7 @@ package main
 
 import(
 	"fmt"
-	"github.com/derekwaters/takingitin/internal/dungeon"
+	"github.com/derekwaters/takingitin/internal/takingitin"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 

@@ -70,19 +70,19 @@ func (scene *PixelMenuScene) Render(game *PixelGameController, win *opengl.Windo
 }
 
 func (scene *PixelMenuScene) HandleKey(game *PixelGameController, win *opengl.Window, dt float64) {
-	if win.JustPressed(pixel.KeyUp) {
+	if win.Pressed(pixel.KeyUp) {
 		scene.currentMenuSelection--
 		if scene.currentMenuSelection < 0 {
 			scene.currentMenuSelection = 0
 		}
 	}
-	if win.JustPressed(pixel.KeyDown) {
+	if win.Pressed(pixel.KeyDown) {
 		scene.currentMenuSelection++
 		if scene.currentMenuSelection >= len(scene.data.MenuOptions) {
 			scene.currentMenuSelection = len(scene.data.MenuOptions) - 1
 		}
 	}
-	if win.JustPressed(pixel.KeyEnter) {
+	if win.Pressed(pixel.KeyEnter) {
 		switch scene.data.MenuOptions[scene.currentMenuSelection] {
 		case PixelMenuSelection_NewGame:
 			game.SetScene(scene.data.NewGameSceneName)
@@ -94,8 +94,5 @@ func (scene *PixelMenuScene) HandleKey(game *PixelGameController, win *opengl.Wi
 			win.SetClosed(true)
 			return;
 		}
-	}
-	if win.JustPressed(pixel.KeyEscape) {
-		win.SetClosed(true)
 	}
 }

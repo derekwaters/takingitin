@@ -32,7 +32,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 	scene.leftHand = NewTakingItInHandObject(
 		game, 
 		[]string{"lefthand1", "lefthand2", "lefthand3", "lefthand4"}, 
-		pixel.V(100, 100), 
+		pixel.V(200, 140), 
 		pixel.KeyW, 
 		pixel.KeyS, 
 		pixel.KeyD, 
@@ -41,7 +41,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 	scene.rightHand = NewTakingItInHandObject(
 		game, 
 		[]string{"righthand1", "righthand2", "righthand3", "righthand4"},
-		pixel.V(800, 100), 
+		pixel.V(1000, 140), 
 		pixel.KeyI, 
 		pixel.KeyK, 
 		pixel.KeyL, 
@@ -109,8 +109,8 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 }
 
 func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
-	scene.rightHand.HandleKey(win)
-	scene.leftHand.HandleKey(win)
+	scene.rightHand.HandleKey(win, dt)
+	scene.leftHand.HandleKey(win, dt)
 
 	// Handle the hands gripping or otherwise
 	scene.rightHand.HandleGripping(scene)
@@ -118,7 +118,7 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 
 	for i := 0; i < len(scene.pegs); i++ {
 		if win.JustPressed(pixel.KeyB) {
-			scene.pegs[i].Unpeg()
+			scene.pegs[i].Unpeg(0.0)
 		}
 		scene.pegs[i].HandleKey(win, dt)
 	}

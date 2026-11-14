@@ -1,7 +1,6 @@
 package takingitin
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/gopxl/pixel/v2"
@@ -87,8 +86,9 @@ func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) {
 	peg.object.UpdatePos(dt, 20)
 }
 
-func (peg *TakingItInPegObject) Unpeg() {
+func (peg *TakingItInPegObject) Unpeg(horizSpeed float64) {
 	peg.pegState = PegState_Falling
+	peg.object.SetSpeed(pixel.V(horizSpeed, 0))
 	peg.object.Fall(0.1 * (rand.Float64() - 0.5))
 }
 

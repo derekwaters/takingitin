@@ -37,6 +37,7 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	controller.Resources.AddFont("menu", "resources/fonts/notacumulus.ttf", 60)
 	controller.Resources.AddFont("menutitle", "resources/fonts/notacumulus.ttf", 100)
 	controller.Resources.AddFont("score", "resources/fonts/notacumulus.ttf", 45)
+	controller.Resources.AddFont("keys", "resources/fonts/notacumulus.ttf", 25)
 	controller.Resources.AddFont("debug", "resources/fonts/notacumulus.ttf", 30)
 
 	var pictureData = map[string]string{
@@ -65,13 +66,15 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	menuData := NewTakingItInMenuData(controller)
 	menuScene := framework.NewPixelMenuScene(menuData)
 	var debugScene TakingItInDebugScene
+	var introScene TakingItInIntroScene
 	var washingScene TakingItInWashingScene
+	introScene.SetGameData(&game)
 	washingScene.SetGameData(&game)
 	controller.AddScene("menu", &menuScene)
 	controller.AddScene("debug", &debugScene)
 	controller.AddScene("about", &debugScene)
-	controller.AddScene("intro", &washingScene)
-	// controller.AddScene("washing", &washingScene)
+	controller.AddScene("intro", &introScene)
+	controller.AddScene("washing", &washingScene)
 	controller.AddScene("end", &debugScene)
 }
 

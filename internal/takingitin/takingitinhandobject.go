@@ -1,15 +1,16 @@
 package takingitin
 
 import (
+	//"fmt"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
-const MAX_SPEED = 4.0
-const ACCEL = 0.5
-const FRICTION = 0.3
+const MAX_SPEED = 400.0
+const ACCEL = 50
+const FRICTION = 30
 const DEFAULT_HAND_SCALE = 0.2
 
 type TakingItInHandObject struct {
@@ -72,7 +73,7 @@ func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
 	imd.Draw(win)
 }
 
-func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
+func (hand *TakingItInHandObject) HandleKey(win *opengl.Window, dt float64) {
 	if win.Pressed(hand.leftBtn) {
 		hand.speed.X -= ACCEL
 	} else if win.Pressed(hand.rightBtn) {
@@ -130,7 +131,7 @@ func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
 		hand.sprite = 0
 	}
 	// Now move the hand
-	hand.pos = hand.pos.Add(hand.speed)
+	hand.pos = hand.pos.Add(hand.speed.Scaled(dt))
 }
 
 func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) {
@@ -149,7 +150,7 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 	} else {
 		// If we were gripping something, then drop it
 		if hand.grippingPeg != nil {
-			hand.grippingPeg.Unpeg()
+			hand.grippingPeg.Unpeg(hand.speed.X)
 			hand.grippingPeg = nil
 			hand.gripOffset = pixel.ZV
 		}

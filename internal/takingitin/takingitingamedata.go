@@ -32,17 +32,28 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	controller.Log("--- Initialising TakingItIn ---")
 	// Load Resources
+
 	controller.Resources.AddFont("menu", "resources/fonts/notacumulus.ttf", 60)
 	controller.Resources.AddFont("menutitle", "resources/fonts/notacumulus.ttf", 100)
-	controller.Resources.AddPicture("menubg", "resources/pictures/stormbg.jpg")
-	controller.Resources.AddPicture("righthand1", "resources/pictures/hand_r1.png")
-	controller.Resources.AddPicture("righthand2", "resources/pictures/hand_r2.png")
-	controller.Resources.AddPicture("righthand3", "resources/pictures/hand_r3.png")
-	controller.Resources.AddPicture("righthand4", "resources/pictures/hand_r4.png")
-	controller.Resources.AddPicture("lefthand1", "resources/pictures/hand_l1.png")
-	controller.Resources.AddPicture("lefthand2", "resources/pictures/hand_l2.png")
-	controller.Resources.AddPicture("lefthand3", "resources/pictures/hand_l3.png")
-	controller.Resources.AddPicture("lefthand4", "resources/pictures/hand_l4.png")
+
+	var pictureData = map[string]string{
+		"menubg": "resources/pictures/stormbg.jpg",
+		"righthand1": "resources/pictures/hand_r1.png",
+		"righthand2": "resources/pictures/hand_r2.png",
+		"righthand3": "resources/pictures/hand_r3.png",
+		"righthand4": "resources/pictures/hand_r4.png",
+		"lefthand1": "resources/pictures/hand_l1.png",
+		"lefthand2": "resources/pictures/hand_l2.png",
+		"lefthand3": "resources/pictures/hand_l3.png",
+		"lefthand4": "resources/pictures/hand_l4.png",
+		"peg_green": "resources/pictures/peg_green.png",
+		"peg_red": "resources/pictures/peg_red.png",
+		"peg_white": "resources/pictures/peg_white.png",
+		"basket_front": "resources/pictures/basket_front.png",
+		"basket_back": "resources/pictures/basket_back.png",
+	}
+	controller.Resources.AddPictures(pictureData)
+
 	// Create Scenes
 	menuData := NewTakingItInMenuData(controller)
 	menuScene := framework.NewPixelMenuScene(menuData)

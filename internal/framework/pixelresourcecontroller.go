@@ -40,6 +40,16 @@ func (controller *PixelResourceController) GetFont(tag string) (*text.Atlas) {
 	return controller.fonts[tag]
 }
 
+func (controller *PixelResourceController) AddPictures(defs map[string]string) error {
+	for k, v := range defs {
+		err := controller.AddPicture(k, v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (controller *PixelResourceController) AddPicture(tag string, path string) error {
 	file, err := os.Open(path)
 	if err != nil {

@@ -10,6 +10,7 @@ import (
 type TakingItInWashingScene struct {
 	rightHand		*TakingItInHandObject
 	leftHand		*TakingItInHandObject
+	pegs			[]*TakingItInPegObject
 }
 
 func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
@@ -31,15 +32,27 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.KeyL, 
 		pixel.KeyJ,
 		pixel.KeyRightShift)
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Green, pixel.V(200, 700)))
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Red, pixel.V(300, 700)))
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_White, pixel.V(400, 700)))
 }
 
 func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController, win *opengl.Window, dt float64) {
 	win.Clear(colornames.Green)
 	scene.rightHand.Draw(win)
 	scene.leftHand.Draw(win)
+	for i := 0; i < len(scene.pegs); i++ {
+		scene.pegs[i].Draw(win)
+	}
 }
 
 func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
 	scene.rightHand.HandleKey(win)
 	scene.leftHand.HandleKey(win)
+	for i := 0; i < len(scene.pegs); i++ {
+		if win.JustPressed(pixel.KeyB) {
+			scene.pegs[i].Unpeg()
+		}
+		scene.pegs[i].HandleKey(win, dt)
+	}
 }

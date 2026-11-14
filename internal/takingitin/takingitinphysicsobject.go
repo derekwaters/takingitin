@@ -1,32 +1,46 @@
 package takingitin
 
 import (
+	"math/rand"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
-const GRAVITY = 9.8
+const GRAVITY = 3.2
+const RESTITUTION = 0.5
+const STOPPED_SPEED = 0.1
 
 
 type PhysicsObjectState int
+type PhysicsGroundCollisionMode int
 
 const (
 	PhysicsObjectState_Stopped = iota
 	PhysicsObjectState_Falling
 )
 
+const (
+	PhysicsGroundCollisionMode_BounceDirect = iota
+	PhysicsGroundCollisionMode_BounceRandom
+	PhysicsGroundCollisionMode_Stop
+)
+
 
 type TakingItInPhysicsObject struct {
 	sprites		[]*pixel.Sprite
 	sprite		int
-	pos			pixel.Matrix
+
+	pos			pixel.Vec
 	speed		pixel.Vec
 	state		PhysicsObjectState
 
+	rotation		float64
 	rotationSpeed	float64
 
 	defaultScale	float64
+
+	groundMode	PhysicsGroundCollisionMode
 }
 
 func NewTakingItInPhysicsObject(
@@ -35,14 +49,18 @@ func NewTakingItInPhysicsObject(
 	scale float64,
 	startPos pixel.Vec,
 	startSpeed pixel.Vec,
-	startRotationSpeed float64) (*TakingItInPhysicsObject) {
+	startRotation float64,
+	startRotationSpeed float64,
+	groundMode PhysicsGroundCollisionMode) (*TakingItInPhysicsObject) {
 
 	obj := TakingItInPhysicsObject{
-		pos: pixel.IM.Scaled(pixel.V(0, 0), scale).Moved(startPos),
+		pos: startPos,
 		speed: startSpeed,
 		state: PhysicsObjectState_Stopped,
 		defaultScale: scale,
+		rotation: startRotation,
 		rotationSpeed: startRotationSpeed,
+		groundMode: groundMode,
 	}
 	for i := 0; i < len(spriteNames); i++ {
 		pic := game.Resources.GetPicture(spriteNames[i])
@@ -53,22 +71,43 @@ func NewTakingItInPhysicsObject(
 }
 
 func (obj *TakingItInPhysicsObject) Draw(win *opengl.Window) {
-	obj.sprites[obj.sprite].Draw(win, obj.pos)
+	mat := pixel.IM.Rotated(pixel.ZV, obj.rotation).Scaled(pixel.ZV, obj.defaultScale).Moved(obj.pos)
+	obj.sprites[obj.sprite].Draw(win, mat)
 }
 
-func (obj *TakingItInPhysicsObject) UpdatePos(dt float64) {
+func (obj *TakingItInPhysicsObject) UpdatePos(dt float64, groundLevel float64) {
 	if (obj.state == PhysicsObjectState_Falling) {
 		obj.speed.Y -= (GRAVITY * dt)
-		obj.pos = obj.pos.Moved(obj.speed).Rotated(pixel.ZV, dt * obj.rotationSpeed)
+		obj.rotation += obj.rotationSpeed
+
+		// If the object would have hit the ground, then bounce it
+		if (obj.pos.Y + obj.speed.Y) < groundLevel {
+			if obj.groundMode == PhysicsGroundCollisionMode_BounceDirect {
+				obj.speed.Y = -obj.speed.Y
+				obj.speed = obj.speed.Scaled(RESTITUTION)
+				if obj.speed.Len() < STOPPED_SPEED {
+					obj.Stop()
+				}
+			} else if obj.groundMode == PhysicsGroundCollisionMode_BounceRandom {
+				obj.rotationSpeed = 0.1 * (rand.Float64() - 0.5)
+				// obj.speed
+			} else {
+				obj.Stop()
+				obj.pos.Y = groundLevel
+			}
+		} else {
+			obj.pos = obj.pos.Add(obj.speed)
+		}
 	}
 }
 
 func (obj *TakingItInPhysicsObject) Stop() {
 	obj.state = PhysicsObjectState_Stopped
-	obj.speed = pixel.V(0, 0)
+	obj.speed = pixel.ZV
 }
 
-func (obj *TakingItInPhysicsObject) Fall() {
+func (obj *TakingItInPhysicsObject) Fall(rotationSpeed float64) {
+	obj.rotationSpeed = rotationSpeed
 	obj.state = PhysicsObjectState_Falling
 }
 
@@ -78,5 +117,5 @@ func (obj *TakingItInPhysicsObject) SetSpeed(speed pixel.Vec) {
 }
 
 func (obj *TakingItInPhysicsObject) SetPos(pos pixel.Vec) {
-	obj.pos = pixel.IM.Scaled(pixel.V(0, 0), obj.defaultScale).Moved(pos)
+	obj.pos = pos
 }

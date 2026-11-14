@@ -63,7 +63,7 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	controller.AddScene("debug", &debugScene)
 	controller.AddScene("about", &debugScene)
 	controller.AddScene("intro", &washingScene)
-	controller.AddScene("washing", &washingScene)
+	// controller.AddScene("washing", &washingScene)
 	controller.AddScene("end", &debugScene)
 }
 

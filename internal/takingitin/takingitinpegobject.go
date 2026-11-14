@@ -1,6 +1,8 @@
 package takingitin
 
 import (
+	"math/rand"
+
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/derekwaters/takingitin/internal/framework"
@@ -48,8 +50,10 @@ func NewPegObject(
 		[]string{PegColourName[colour]},
 		PEG_SCALE,
 		startPos,
-		pixel.V(0, 0),
-		0)
+		pixel.ZV,
+		0,
+		0,
+		PhysicsGroundCollisionMode_BounceDirect)
 
 	peg := TakingItInPegObject{
 		object: physObj,
@@ -64,10 +68,10 @@ func (peg *TakingItInPegObject) Draw(win *opengl.Window) {
 }
 
 func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) {
-	peg.object.UpdatePos(dt)
+	peg.object.UpdatePos(dt, 20)
 }
 
 func (peg *TakingItInPegObject) Unpeg() {
 	peg.pegState = PegState_Falling
-	peg.object.Fall()
+	peg.object.Fall(0.1 * (rand.Float64() - 0.5))
 }

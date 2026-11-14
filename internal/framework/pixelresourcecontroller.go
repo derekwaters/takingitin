@@ -18,11 +18,13 @@ import (
 type PixelResourceController struct {
 	fonts		map[string]*text.Atlas;
 	pictures	map[string]pixel.Picture;
+	masks		map[string]*PixelPictureMask;
 }
 
 func (controller *PixelResourceController) Init(game *PixelGameController) {
 	controller.fonts = make(map[string]*text.Atlas)
 	controller.pictures = make(map[string]pixel.Picture)
+	controller.masks = make(map[string]*PixelPictureMask)
 }
 
 func (controller *PixelResourceController) GenerateTextElement(pos pixel.Vec, tag string, color color.RGBA) *text.Text {
@@ -36,13 +38,18 @@ func (controller *PixelResourceController) GetPicture(tag string) (pixel.Picture
 	return pix
 }
 
+func (controller *PixelResourceController) GetMask(tag string) (*PixelPictureMask) {
+	pix, _ := controller.masks[tag]
+	return pix
+}
+
 func (controller *PixelResourceController) GetFont(tag string) (*text.Atlas) {
 	return controller.fonts[tag]
 }
 
-func (controller *PixelResourceController) AddPictures(defs map[string]string) error {
+func (controller *PixelResourceController) AddPictures(defs map[string]string, needMask bool) error {
 	for k, v := range defs {
-		err := controller.AddPicture(k, v)
+		err := controller.AddPicture(k, v, needMask)
 		if err != nil {
 			return err
 		}
@@ -50,7 +57,7 @@ func (controller *PixelResourceController) AddPictures(defs map[string]string) e
 	return nil
 }
 
-func (controller *PixelResourceController) AddPicture(tag string, path string) error {
+func (controller *PixelResourceController) AddPicture(tag string, path string, needMask bool) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -60,7 +67,11 @@ func (controller *PixelResourceController) AddPicture(tag string, path string) e
 	if err != nil {
 		return err
 	}
-	controller.pictures[tag] = pixel.PictureDataFromImage(img)
+	pd := pixel.PictureDataFromImage(img)
+	controller.pictures[tag] = pd
+	if needMask {
+		controller.masks[tag] = NewMaskFromPicture(pd)
+	}
 	return nil
 }
 

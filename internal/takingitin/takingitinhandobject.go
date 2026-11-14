@@ -10,7 +10,7 @@ import (
 const MAX_SPEED = 4.0
 const ACCEL = 0.5
 const FRICTION = 0.3
-const DEFAULT_SCALE = 0.4
+const DEFAULT_HAND_SCALE = 0.2
 
 type TakingItInHandObject struct {
 	sprites		[]*pixel.Sprite
@@ -23,6 +23,10 @@ type TakingItInHandObject struct {
 	rightBtn	pixel.Button
 	leftBtn		pixel.Button
 	closeBtn	pixel.Button
+
+	gripOffset			pixel.Vec
+	grippingPeg			*TakingItInPegObject
+	// GrippingClothes		*TakingItInClothesObject
 }
 
 func NewTakingItInHandObject(
@@ -53,10 +57,16 @@ func NewTakingItInHandObject(
 }
 
 func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
-	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_SCALE).Moved(hand.pos)
+	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_HAND_SCALE).Moved(hand.pos)
 	hand.sprites[hand.sprite].Draw(win, mat)
+
+	// Debug
 	imd := imdraw.New(nil)
-	imd.Color = pixel.RGB(1, 0, 0)
+	if hand.grippingPeg != nil {
+		imd.Color = pixel.RGB(0, 1, 0)
+	} else {
+		imd.Color = pixel.RGB(1, 0, 0)
+	}
 	imd.Push(hand.pos)
 	imd.Circle(5, 0)
 	imd.Draw(win)
@@ -121,4 +131,27 @@ func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
 	}
 	// Now move the hand
 	hand.pos = hand.pos.Add(hand.speed)
+}
+
+func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) {
+	if hand.sprite == (len(hand.sprites) - 1) {
+		// Gripping
+		if hand.grippingPeg != nil {
+			// We already had something, so move it
+			hand.grippingPeg.SetPos(hand.pos.Add(hand.gripOffset))
+		} else {
+			hand.grippingPeg = scene.FindGrabbedPeg(hand.pos)
+			if hand.grippingPeg != nil {
+				// We got something!
+				hand.gripOffset = hand.pos.Sub(hand.grippingPeg.GetPos())
+			}
+		}
+	} else {
+		// If we were gripping something, then drop it
+		if hand.grippingPeg != nil {
+			hand.grippingPeg.Unpeg()
+			hand.grippingPeg = nil
+			hand.gripOffset = pixel.ZV
+		}
+	}
 }

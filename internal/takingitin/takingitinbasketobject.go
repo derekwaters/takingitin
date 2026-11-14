@@ -7,6 +7,8 @@ import (
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
+const DEFAULT_BASKET_SCALE = 0.4
+
 type TakingItInBasketObject struct {
 	backSprite	*pixel.Sprite		
 	frontSprite	*pixel.Sprite
@@ -30,11 +32,11 @@ func NewTakingItInBasketObject(
 }
 
 func (basket *TakingItInBasketObject) DrawBack(win *opengl.Window) {
-	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_SCALE).Moved(basket.pos)
+	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_BASKET_SCALE).Moved(basket.pos)
 	basket.backSprite.Draw(win, mat)
 }
 
 func (basket *TakingItInBasketObject) DrawFront(win *opengl.Window) {
-	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_SCALE).Moved(basket.pos)
+	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_BASKET_SCALE).Moved(basket.pos)
 	basket.frontSprite.Draw(win, mat)
 }

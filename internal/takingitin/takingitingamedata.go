@@ -49,13 +49,17 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 		"lefthand2": "resources/pictures/hand_l2.png",
 		"lefthand3": "resources/pictures/hand_l3.png",
 		"lefthand4": "resources/pictures/hand_l4.png",
-		"peg_green": "resources/pictures/peg_green.png",
-		"peg_red": "resources/pictures/peg_red.png",
-		"peg_white": "resources/pictures/peg_white.png",
+
 		"basket_front": "resources/pictures/basket_front.png",
 		"basket_back": "resources/pictures/basket_back.png",
 	}
-	controller.Resources.AddPictures(pictureData)
+	var maskPictureData = map[string]string{		
+		"peg_green": "resources/pictures/peg_green.png",
+		"peg_red": "resources/pictures/peg_red.png",
+		"peg_white": "resources/pictures/peg_white.png",
+	}
+	controller.Resources.AddPictures(pictureData, false)
+	controller.Resources.AddPictures(maskPictureData, true)
 
 	// Create Scenes
 	menuData := NewTakingItInMenuData(controller)

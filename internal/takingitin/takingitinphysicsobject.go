@@ -8,7 +8,7 @@ import (
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
-const GRAVITY = 200
+const GRAVITY = 400
 const RESTITUTION = 0.5
 const STOPPED_SPEED = 0.1
 const ROTATION_SCALE = 10.0
@@ -125,4 +125,16 @@ func (obj *TakingItInPhysicsObject) SetSpeed(speed pixel.Vec) {
 
 func (obj *TakingItInPhysicsObject) SetPos(pos pixel.Vec) {
 	obj.pos = pos
+}
+
+func (obj *TakingItInPhysicsObject) GetPos() (pos pixel.Vec) {
+	return obj.pos
+}
+
+func (obj *TakingItInPhysicsObject) GetRotation() (float64) {
+	return obj.rotation
+}
+
+func (obj *TakingItInPhysicsObject) GetSprite() (*pixel.Sprite) {
+	return obj.sprites[obj.sprite]
 }

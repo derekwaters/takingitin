@@ -2,6 +2,7 @@ package takingitin
 
 import (
 	"fmt"
+	"math"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/gopxl/pixel/v2/ext/text"
@@ -46,9 +47,9 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.KeyL, 
 		pixel.KeyJ,
 		pixel.KeyRightShift)
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Green, pixel.V(200, 700)))
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Red, pixel.V(300, 700)))
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_White, pixel.V(400, 700)))
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Green, pixel.V(200, 700), 0))
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Red, pixel.V(300, 700), math.Pi / 2))
+	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_White, pixel.V(400, 700), .4))
 	scene.basket = NewTakingItInBasketObject(
 		game,
 		"basket_back",
@@ -57,17 +58,17 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 
 
 	scene.scoreText = game.Resources.GenerateTextElement(
-		pixel.V(10, 800), 
+		pixel.V(10, 900), 
 		"score", 
 		colornames.White)
 	scene.timerText = game.Resources.GenerateTextElement(
-		pixel.V(800, 800), 
+		pixel.V(800, 900), 
 		"score", 
 		colornames.White)
 
 	// Debug
 	scene.posText = game.Resources.GenerateTextElement(
-		pixel.V(900, 900), 
+		pixel.V(900, 800), 
 		"debug", 
 		colornames.Red)
 }
@@ -110,10 +111,25 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
 	scene.rightHand.HandleKey(win)
 	scene.leftHand.HandleKey(win)
+
+	// Handle the hands gripping or otherwise
+	scene.rightHand.HandleGripping(scene)
+	scene.leftHand.HandleGripping(scene)
+
 	for i := 0; i < len(scene.pegs); i++ {
 		if win.JustPressed(pixel.KeyB) {
 			scene.pegs[i].Unpeg()
 		}
 		scene.pegs[i].HandleKey(win, dt)
 	}
+}
+
+func (scene *TakingItInWashingScene) FindGrabbedPeg(atPos pixel.Vec) (*TakingItInPegObject) {
+
+	for i := 0; i < len(scene.pegs); i++ {
+		if scene.pegs[i].CheckHit(atPos) {
+			return scene.pegs[i]
+		}
+	}
+	return nil
 }

@@ -7,7 +7,8 @@ import (
 )
 
 type TakingItInGameData struct {
-	score			int
+	Score			int
+	TimeRemaining	int
 }
 
 func NewTakingItInMenuData(controller *framework.PixelGameController) framework.PixelMenuData {
@@ -35,6 +36,8 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 
 	controller.Resources.AddFont("menu", "resources/fonts/notacumulus.ttf", 60)
 	controller.Resources.AddFont("menutitle", "resources/fonts/notacumulus.ttf", 100)
+	controller.Resources.AddFont("score", "resources/fonts/notacumulus.ttf", 45)
+	controller.Resources.AddFont("debug", "resources/fonts/notacumulus.ttf", 30)
 
 	var pictureData = map[string]string{
 		"menubg": "resources/pictures/stormbg.jpg",
@@ -59,6 +62,7 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	menuScene := framework.NewPixelMenuScene(menuData)
 	var debugScene TakingItInDebugScene
 	var washingScene TakingItInWashingScene
+	washingScene.SetGameData(&game)
 	controller.AddScene("menu", &menuScene)
 	controller.AddScene("debug", &debugScene)
 	controller.AddScene("about", &debugScene)

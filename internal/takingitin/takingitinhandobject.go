@@ -3,6 +3,7 @@ package takingitin
 import (
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
+	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
@@ -14,7 +15,7 @@ const DEFAULT_SCALE = 0.4
 type TakingItInHandObject struct {
 	sprites		[]*pixel.Sprite
 	sprite		int
-	pos			pixel.Matrix
+	pos			pixel.Vec
 	speed		pixel.Vec
 
 	upBtn		pixel.Button
@@ -35,7 +36,7 @@ func NewTakingItInHandObject(
 	closeBtn pixel.Button) (*TakingItInHandObject) {
 
 	hand := TakingItInHandObject{
-		pos: pixel.IM.Scaled(pixel.V(0, 0), DEFAULT_SCALE).Moved(startPos),
+		pos: startPos,
 		speed: pixel.V(0, 0),
 		upBtn: upBtn,
 		downBtn: downBtn,
@@ -52,7 +53,13 @@ func NewTakingItInHandObject(
 }
 
 func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
-	hand.sprites[hand.sprite].Draw(win, hand.pos)
+	mat := pixel.IM.Scaled(pixel.ZV, DEFAULT_SCALE).Moved(hand.pos)
+	hand.sprites[hand.sprite].Draw(win, mat)
+	imd := imdraw.New(nil)
+	imd.Color = pixel.RGB(1, 0, 0)
+	imd.Push(hand.pos)
+	imd.Circle(5, 0)
+	imd.Draw(win)
 }
 
 func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
@@ -113,5 +120,5 @@ func (hand *TakingItInHandObject) HandleKey(win *opengl.Window) {
 		hand.sprite = 0
 	}
 	// Now move the hand
-	hand.pos = hand.pos.Moved(hand.speed)
+	hand.pos = hand.pos.Add(hand.speed)
 }

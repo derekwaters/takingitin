@@ -53,7 +53,7 @@ func NewPegObject(
 		pixel.ZV,
 		0,
 		0,
-		PhysicsGroundCollisionMode_BounceDirect)
+		PhysicsGroundCollisionMode_BounceRandom)
 
 	peg := TakingItInPegObject{
 		object: physObj,

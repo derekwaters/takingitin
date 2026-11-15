@@ -3,6 +3,7 @@ package takingitin
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/gopxl/pixel/v2/ext/imdraw"
@@ -50,11 +51,9 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.KeyL, 
 		pixel.KeyJ,
 		pixel.KeyRightShift)
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Green, pixel.V(200, 700), 0))
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Red, pixel.V(300, 700), math.Pi / 2))
-	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_White, pixel.V(400, 700), .4))
 
-	scene.washing = append(scene.washing, NewWashingObject(game, "washing_shirt1", pixel.V(300, scene.GetLinePosY(300, 0)), 0.0))
+	yPos := scene.GetLinePosY(300, 0)
+	scene.AddWashingAndPegs(game, 300, yPos, .1, "washing_shirt1", []float64{-20, 20})
 
 	scene.basket = NewTakingItInBasketObject(
 		game,
@@ -85,6 +84,26 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.V(900, 800), 
 		"debug", 
 		colornames.Red)
+}
+
+func (scene *TakingItInWashingScene) AddWashingAndPegs(
+	game *framework.PixelGameController, 
+	x float64, 
+	y float64, 
+	rotation float64,
+	tag string, 
+	pegOffsets []float64) {
+
+	washing := NewWashingObject(game, tag, pixel.V(x, y), rotation)
+	scene.washing = append(scene.washing, washing)
+
+	for i := 0; i < len(pegOffsets); i++ {
+		rotation := (rand.Float64() - 0.5) * math.Pi / 10
+		peg := NewPegObject(game, PegColour_White, pixel.V(x + pegOffsets[i], y), rotation)
+		washing.HeldByPeg(peg)
+		peg.HoldingWashing(washing)
+		scene.pegs = append(scene.pegs, peg)
+	}
 }
 
 func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController, win *opengl.Window, dt float64) {
@@ -137,9 +156,6 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 	scene.leftHand.HandleGripping(scene)
 
 	for i := 0; i < len(scene.pegs); i++ {
-		if win.JustPressed(pixel.KeyB) {
-			scene.pegs[i].Unpeg(0.0)
-		}
 		scene.pegs[i].HandleKey(win, dt)
 	}
 

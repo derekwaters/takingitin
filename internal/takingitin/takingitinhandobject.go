@@ -1,7 +1,9 @@
 package takingitin
 
 import (
-	//"fmt"
+	"fmt"
+	"math"
+	"math/rand"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/gopxl/pixel/v2/ext/imdraw"
@@ -12,6 +14,10 @@ const MAX_SPEED = 400.0
 const ACCEL = 50
 const FRICTION = 30
 const DEFAULT_HAND_SCALE = 0.2
+
+const WASHING_GRIP_PRESSURE_INCREASE = 0.5
+const WASHING_GRIP_PRESSURE_THRESHOLD = 50.0
+const WASHING_GRIP_PRESSURE_VIBRATION = 10.0
 
 type TakingItInHandObject struct {
 	sprites		[]*pixel.Sprite
@@ -28,6 +34,7 @@ type TakingItInHandObject struct {
 	gripOffset			pixel.Vec
 	grippingPeg			*TakingItInPegObject
 	grippingWashing		*TakingItInWashingObject
+	washingGripPressure	float64
 }
 
 func NewTakingItInHandObject(
@@ -132,8 +139,49 @@ func (hand *TakingItInHandObject) HandleKey(win *opengl.Window, dt float64) {
 	} else if hand.sprite < 0 {
 		hand.sprite = 0
 	}
+
+	// If the hand is about to move:
+	// Now check the state
+	// if we're gripping a peg
+	//   peg is on the line?
+	//     unpeg it
+	//     check the clothes its attached to
+	//   else
+	//     move the peg
+	// else if we're gripping washing
+	//   if the washing is on the line
+	//     increase drag pressure
+	//     if the drag pressure exceeds a value
+	//        send the pegs flying
+	//     else
+	//        wobble position a little
+	//   else
+	//     move the washing
+
+	addToPos := hand.speed.Scaled(dt)
+
+	if hand.speed.X != 0 || hand.speed.Y != 0 {
+		if hand.grippingPeg != nil {
+			if hand.grippingPeg.GetState() == PegState_OnTheLine {
+				// This will check to see if the clothes are free
+				hand.grippingPeg.Unpeg()
+			}
+		} else if hand.grippingWashing != nil {
+			if hand.grippingWashing.GetState() == WashingState_OnTheLine {
+				hand.washingGripPressure += WASHING_GRIP_PRESSURE_INCREASE
+				if hand.washingGripPressure > WASHING_GRIP_PRESSURE_THRESHOLD {
+					// Let it fly!
+					hand.grippingWashing.Unpeg()
+				} else {
+					vibrate := (hand.washingGripPressure / WASHING_GRIP_PRESSURE_THRESHOLD) *
+						rand.Float64() * WASHING_GRIP_PRESSURE_VIBRATION
+					addToPos = pixel.ZV.Unit().Rotated(rand.Float64() * 2 * math.Pi).Scaled(vibrate)
+				}
+			}
+		}
+	}
 	// Now move the hand
-	hand.pos = hand.pos.Add(hand.speed.Scaled(dt))
+	hand.pos = hand.pos.Add(addToPos)
 }
 
 func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) {
@@ -141,10 +189,10 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 		// Gripping
 		if hand.grippingPeg != nil {
 			// We already had a peg, so move it
-			hand.grippingPeg.SetPos(hand.pos.Add(hand.gripOffset))
+			hand.grippingPeg.SetPos(hand.pos.Sub(hand.gripOffset))
 		} else if hand.grippingWashing != nil {
 			// We already had washing, so move it
-			hand.grippingWashing.SetPos(hand.pos.Add(hand.gripOffset))
+			hand.grippingWashing.SetPos(hand.pos.Sub(hand.gripOffset))
 		} else {
 			hand.grippingPeg = scene.FindGrabbedPeg(hand.pos)
 			if hand.grippingPeg != nil {
@@ -154,17 +202,19 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 				hand.grippingWashing = scene.FindGrabbedWashing(hand.pos)
 				if hand.grippingWashing != nil {
 					hand.gripOffset = hand.pos.Sub(hand.grippingWashing.GetPos())
+					fmt.Println("handpos", hand.pos, "washingpos", hand.grippingWashing.GetPos(), "offset", hand.gripOffset)
+					hand.washingGripPressure = 0
 				}
 			}
 		}
 	} else {
 		// If we were gripping something, then drop it
 		if hand.grippingPeg != nil {
-			hand.grippingPeg.Unpeg(hand.speed.X)
+			hand.grippingPeg.Drop(hand.speed.X)
 			hand.grippingPeg = nil
 			hand.gripOffset = pixel.ZV
 		} else if hand.grippingWashing != nil {
-			hand.grippingWashing.Unpeg(hand.speed.X / 3)
+			hand.grippingWashing.Drop(hand.speed.X / 3)
 			hand.grippingWashing = nil
 			hand.gripOffset = pixel.ZV
 		}

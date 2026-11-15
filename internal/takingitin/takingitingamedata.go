@@ -24,7 +24,7 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 		MenuFontTag: "menu",
 		TitleFontTag: "menutitle",
 		MenuOptions: options,
-		NewGameSceneName: "intro",
+		NewGameSceneName: "washing",
 		AboutSceneName: "about",
 	}
 	return data

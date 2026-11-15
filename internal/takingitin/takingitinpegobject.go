@@ -1,6 +1,7 @@
 package takingitin
 
 import (
+	"math"
 	"math/rand"
 
 	"github.com/gopxl/pixel/v2"
@@ -10,6 +11,7 @@ import (
 )
 
 const PEG_SCALE = 0.2
+const PEG_SEND_FLYING_MAX_SPEED = 500.0
 
 type PegState int
 type PegColour int
@@ -40,6 +42,7 @@ type TakingItInPegObject struct {
 	pegState		PegState
 	pegColour		PegColour
 	mask			*framework.PixelPictureMask
+	holding			*TakingItInWashingObject
 }
 
 func NewPegObject(
@@ -86,7 +89,24 @@ func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) {
 	peg.object.UpdatePos(dt, 20)
 }
 
-func (peg *TakingItInPegObject) Unpeg(horizSpeed float64) {
+func (peg *TakingItInPegObject) HoldingWashing(washing *TakingItInWashingObject) {
+	peg.holding = washing
+}
+
+func (peg *TakingItInPegObject) Unpeg() {
+	// Check the attached washing
+	if peg.holding != nil {
+		peg.holding.RemovePeg(peg)
+	}
+}
+
+func (peg *TakingItInPegObject) SendFlying() {
+	peg.pegState = PegState_Falling
+	peg.object.SetSpeed(pixel.ZV.Unit().Rotated(rand.Float64() * math.Pi * 2).Scaled(rand.Float64() * PEG_SEND_FLYING_MAX_SPEED))
+	peg.object.Fall(0.1 * (rand.Float64() - 0.5))
+}
+
+func (peg *TakingItInPegObject) Drop(horizSpeed float64) {
 	peg.pegState = PegState_Falling
 	peg.object.SetSpeed(pixel.V(horizSpeed, 0))
 	peg.object.Fall(0.1 * (rand.Float64() - 0.5))
@@ -98,6 +118,10 @@ func (peg *TakingItInPegObject) GetPos() (pixel.Vec) {
 
 func (peg *TakingItInPegObject) SetPos(newPos pixel.Vec) {
 	peg.object.SetPos(newPos)
+}
+
+func (peg *TakingItInPegObject) GetState() (PegState) {
+	return peg.pegState
 }
 
 // Note, this pos is in game screen coordinates

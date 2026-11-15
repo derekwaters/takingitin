@@ -22,6 +22,8 @@ type TakingItInWashingObject struct {
 	object			*TakingItInPhysicsObject
 	state			WashingState
 	mask			*framework.PixelPictureMask
+	heldByPegs		[]*TakingItInPegObject
+	scale			float64
 }
 
 func NewWashingObject(
@@ -30,7 +32,7 @@ func NewWashingObject(
 	startPos pixel.Vec,
 	startRotation float64) (*TakingItInWashingObject) {
 
-	scale := (rand.Float64() + 0.2) / 4.0
+	scale := 0.35 + (rand.Float64() * 0.1)
 
 	physObj := NewTakingItInPhysicsObject(
 		game, 
@@ -45,6 +47,7 @@ func NewWashingObject(
 	washing := TakingItInWashingObject{
 		object: physObj,
 		state: WashingState_OnTheLine,
+		scale: scale,
 	}
 	washing.mask = game.Resources.GetMask(item)
 	return &washing
@@ -58,9 +61,9 @@ func (washing *TakingItInWashingObject) Draw(win *opengl.Window) {
 	// Check whether the mouse is on this item
 	if washing.CheckHit(win.MousePosition()) {
 		imd := imdraw.New(nil)
-		imd.Color = pixel.RGB(0, 1, 0)
+		imd.Color = pixel.RGB(0, 1, 1)
 		imd.Push(washing.GetPos())
-		imd.Circle(3, 0)
+		imd.Circle(5, 0)
 		imd.Draw(win)
 	}
 }
@@ -69,7 +72,38 @@ func (washing *TakingItInWashingObject) HandleKey(win *opengl.Window, dt float64
 	washing.object.UpdatePos(dt, 20)
 }
 
-func (washing *TakingItInWashingObject) Unpeg(horizSpeed float64) {
+func (washing *TakingItInWashingObject) HeldByPeg(peg *TakingItInPegObject) {
+	washing.heldByPegs = append(washing.heldByPegs, peg)
+}
+
+// This send all the pegs flying
+func (washing *TakingItInWashingObject) Unpeg() {
+	for i := 0; i < len(washing.heldByPegs); i++ {
+		washing.heldByPegs[i].SendFlying()
+	}
+	washing.state = WashingState_Falling
+}
+
+// This removes a single peg which may cause the washing to fall
+func (washing *TakingItInWashingObject) RemovePeg(peg *TakingItInPegObject) {
+	removeIndex := -1
+	for i := 0; i < len(washing.heldByPegs) && (removeIndex == -1); i++ {
+		if washing.heldByPegs[i] == peg {
+			removeIndex = i
+		}
+	}
+	if removeIndex >= 0 {
+		peg.HoldingWashing(nil)
+		washing.heldByPegs = append(washing.heldByPegs[:removeIndex], washing.heldByPegs[removeIndex + 1:]...)
+	}
+
+	if len(washing.heldByPegs) == 0 {
+		washing.Drop(0.0)
+	}
+}
+
+
+func (washing *TakingItInWashingObject) Drop(horizSpeed float64) {
 	washing.state = WashingState_Falling
 	washing.object.SetSpeed(pixel.V(horizSpeed, 0))
 	washing.object.Fall(0.0)
@@ -83,9 +117,13 @@ func (washing *TakingItInWashingObject) SetPos(newPos pixel.Vec) {
 	washing.object.SetPos(newPos)
 }
 
+func (washing *TakingItInWashingObject) GetState() (WashingState) {
+	return washing.state
+}
+
 // Note, this pos is in game screen coordinates
 func (washing *TakingItInWashingObject) CheckHit(atPos pixel.Vec) bool {
 
-	checkInMask := atPos.Sub(washing.GetPos()).Scaled(1.0 / PEG_SCALE).Rotated(-washing.object.GetRotation()).Add(washing.mask.GetRect().Center())
+	checkInMask := atPos.Sub(washing.GetPos()).Scaled(1 / washing.scale).Rotated(-washing.object.GetRotation()).Add(washing.mask.GetRect().Center())
 	return washing.mask.GetMask(checkInMask)
 }

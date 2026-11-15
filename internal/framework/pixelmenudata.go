@@ -29,4 +29,7 @@ type PixelMenuData struct {
 	MenuOptions []PixelMenuSelection
 	NewGameSceneName string
 	AboutSceneName string
+	MenuBgMusicName	string
+	MenuNewOptionSoundName string
+	MenuSelectOptionSoundName string
 }

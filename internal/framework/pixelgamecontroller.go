@@ -27,6 +27,7 @@ type PixelGameController struct {
 	// textAtlas					*text.Atlas
 	// debugAtlas					*text.Atlas
 	Resources					*PixelResourceController
+	Sounds						*PixelSoundController
 }
 
 func (game *PixelGameController) Launch(gameData PixelGameData) {
@@ -45,10 +46,13 @@ func (game *PixelGameController) AddScene(name string, scene PixelGameScene) {
 }
 
 func (game *PixelGameController) SetScene(name string) {
-	_, exist := game.Scenes[name]
-	if exist {
-		game.Log(":: Scene Changed to ", name)
-		game.CurrentScene = name
+	if game.CurrentScene != name {
+		_, exist := game.Scenes[name]
+		if exist {
+			game.Log(":: Scene Changed to ", name)
+			game.CurrentScene = name
+			game.Scenes[game.CurrentScene].OnShowScene(game)
+		}
 	}
 }
 
@@ -63,6 +67,8 @@ func (game *PixelGameController) Log(msg ...interface{}) {
 func (game *PixelGameController) Init() {
 	game.Resources = new(PixelResourceController)
 	game.Resources.Init(game)
+	game.Sounds = new(PixelSoundController)
+	game.Sounds.Init(game)
 	game.gameData.Init(game)
 	// Init all the scenes
 	for _, scene := range game.Scenes {

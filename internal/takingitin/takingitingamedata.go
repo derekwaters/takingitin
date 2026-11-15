@@ -35,6 +35,9 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 		MenuOptions: options,
 		NewGameSceneName: "washing",
 		AboutSceneName: "about",
+		MenuBgMusicName: "menu_loop",
+		MenuNewOptionSoundName: "menu_button",
+		MenuSelectOptionSoundName: "menu_button",
 	}
 	return data
 }
@@ -75,6 +78,12 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	}
 	controller.Resources.AddPictures(pictureData, false)
 	controller.Resources.AddPictures(maskPictureData, true)
+
+	//var audioData = map[string]string{
+	//	"menu_loop": "resources/sounds/rain_thunder_loop.wav",
+	//	"menu_button": "resources/sounds/menu_button.wav",
+	//}
+	//controller.Sounds.AddSounds(audioData)
 
 	// Create Scenes
 	menuData := NewTakingItInMenuData(controller)

@@ -253,3 +253,6 @@ func (scene *TakingItInWashingScene) FindGrabbedWashing(atPos pixel.Vec) (*Takin
 func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float64) {
 	return (0.000125 * (float64(x) - 600.0) * (float64(x) - 600.0)) + 800.0
 }
+
+func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
+}

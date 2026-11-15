@@ -9,4 +9,6 @@ type PixelGameScene interface {
 	Init(game *PixelGameController)
 	Render(game *PixelGameController, win *opengl.Window, dt float64)
 	HandleKey(game *PixelGameController, win *opengl.Window, dt float64)
+
+	OnShowScene(game *PixelGameController)
 }

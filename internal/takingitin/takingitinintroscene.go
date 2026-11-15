@@ -109,3 +109,6 @@ func (scene *TakingItInIntroScene) HandleKey(game *framework.PixelGameController
 		game.SetScene("washing")
 	}
 }
+
+func (scene *TakingItInIntroScene) OnShowScene(game *framework.PixelGameController) {
+}

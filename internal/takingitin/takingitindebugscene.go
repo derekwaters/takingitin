@@ -20,3 +20,6 @@ func (scene *TakingItInDebugScene) Render(game *framework.PixelGameController, w
 
 func (scene *TakingItInDebugScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
 }
+
+func (scene *TakingItInDebugScene) OnShowScene(game *framework.PixelGameController) {
+}

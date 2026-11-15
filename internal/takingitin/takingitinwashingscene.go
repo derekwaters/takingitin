@@ -187,12 +187,12 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 		if scene.pegs[i].GetState() != PegState_InTheBucket {
 			if scene.pegs[i].HandleKey(win, dt) {
 				// Peg hit the ground - is it in a bucket?
-				scene.PegHitGround(scene.pegs[i])
+				scene.PegHitGround(game, scene.pegs[i])
 			}
 			if scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
 				scene.pegs[i].Stop()
 				scene.pegs[i].SetState(PegState_InTheBucket)
-				scene.PegHitGround(scene.pegs[i])
+				scene.PegHitGround(game, scene.pegs[i])
 			}
 		}
 	}
@@ -201,18 +201,18 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 		if scene.washing[i].GetState() != WashingState_InTheBasket {
 			if scene.washing[i].HandleKey(win, dt) {
 				// Washing hit the ground - is it in a bucket?
-				scene.WashingHitGround(scene.washing[i])
+				scene.WashingHitGround(game, scene.washing[i])
 			}
 			if scene.basket.CheckInBasket(scene.washing[i].GetPos()) {
 				scene.washing[i].Stop()
 				scene.washing[i].SetState(WashingState_InTheBasket)
-				scene.WashingHitGround(scene.washing[i])
+				scene.WashingHitGround(game, scene.washing[i])
 			}
 		}
 	}
 }
 
-func (scene *TakingItInWashingScene) PegHitGround(peg *TakingItInPegObject) {
+func (scene *TakingItInWashingScene) PegHitGround(game *framework.PixelGameController, peg *TakingItInPegObject) {
 	if (scene.bucket.CheckInBucket(peg.GetPos())) {
 		// Nice!
 		scene.gameData.AddCollectedPeg()
@@ -221,7 +221,9 @@ func (scene *TakingItInWashingScene) PegHitGround(peg *TakingItInPegObject) {
 	}
 }
 
-func (scene *TakingItInWashingScene) WashingHitGround(washing *TakingItInWashingObject) {
+func (scene *TakingItInWashingScene) WashingHitGround(game *framework.PixelGameController, washing *TakingItInWashingObject) {
+	sounds := []string{"washing1", "washing2", "washing3"}
+	game.Sounds.Play(sounds[rand.Intn(len(sounds))])
 	if (scene.basket.CheckInBasket(washing.GetPos())) {
 		// Nice!
 		scene.gameData.AddCollectedWashing()
@@ -256,4 +258,5 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
 	game.Sounds.StopAll()
+	game.Sounds.Loop("washing_bg")
 }

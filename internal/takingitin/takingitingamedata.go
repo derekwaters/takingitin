@@ -33,7 +33,7 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 		MenuFontTag: "menu",
 		TitleFontTag: "menutitle",
 		MenuOptions: options,
-		NewGameSceneName: "washing",
+		NewGameSceneName: "intro",
 		AboutSceneName: "about",
 		MenuBgMusicName: "menu_loop",
 		MenuNewOptionSoundName: "menu_button",
@@ -82,6 +82,10 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	var audioData = map[string]string{
 		"menu_loop": "resources/sounds/rain_thunder_loop.wav",
 		"menu_button": "resources/sounds/menu_button.wav",
+		"washing1": "resources/sounds/washing_noise1.wav",
+		"washing2": "resources/sounds/washing_noise2.wav",
+		"washing3": "resources/sounds/washing_noise3.wav",
+		"washing_bg": "resources/sounds/washing_bg.wav",
 	}
 	controller.Sounds.AddSounds(audioData)
 

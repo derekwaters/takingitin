@@ -1,7 +1,7 @@
 package takingitin
 
 import (
-	"math/rand"
+	//"math/rand"
 
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/ext/imdraw"
@@ -32,7 +32,12 @@ func NewWashingObject(
 	startPos pixel.Vec,
 	startRotation float64) (*TakingItInWashingObject) {
 
-	scale := 0.35 + (rand.Float64() * 0.1)
+	// scale := 0.35 + (rand.Float64() * 0.1)
+	scale := 0.4
+
+	pic := game.Resources.GetPicture(item)
+	yOff := (pic.Bounds().H() / 2) * scale
+	startPos.Y -= yOff
 
 	physObj := NewTakingItInPhysicsObject(
 		game, 
@@ -59,17 +64,19 @@ func (washing *TakingItInWashingObject) Draw(win *opengl.Window) {
 	
 	// DEBUG
 	// Check whether the mouse is on this item
-	if washing.CheckHit(win.MousePosition()) {
-		imd := imdraw.New(nil)
+	imd := imdraw.New(nil)
+	if washing.CheckHit(win.MousePosition()) {		
 		imd.Color = pixel.RGB(0, 1, 1)
-		imd.Push(washing.GetPos())
-		imd.Circle(5, 0)
-		imd.Draw(win)
+	} else {
+		imd.Color = pixel.RGB(1, 1, 0)
 	}
+	imd.Push(washing.GetPos())
+	imd.Circle(5, 0)
+	imd.Draw(win)
 }
 
-func (washing *TakingItInWashingObject) HandleKey(win *opengl.Window, dt float64) {
-	washing.object.UpdatePos(dt, 20)
+func (washing *TakingItInWashingObject) HandleKey(win *opengl.Window, dt float64) bool {
+	return washing.object.UpdatePos(dt, GROUND_LEVEL)
 }
 
 func (washing *TakingItInWashingObject) HeldByPeg(peg *TakingItInPegObject) {

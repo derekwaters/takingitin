@@ -9,6 +9,14 @@ import (
 type TakingItInGameData struct {
 	Score			int
 	TimeRemaining	int
+
+	PegsCollected	int
+	PegsOnGround	int
+	TotalPegs		int
+
+	WashingCollected	int
+	WashingOnGround		int
+	TotalWashing		int
 }
 
 func NewTakingItInMenuData(controller *framework.PixelGameController) framework.PixelMenuData {
@@ -53,6 +61,8 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 
 		"basket_front": "resources/pictures/basket_front.png",
 		"basket_back": "resources/pictures/basket_back.png",
+		"bucket_front": "resources/pictures/bucket_front.png",
+		"bucket_back": "resources/pictures/bucket_back.png",
 	}
 	var maskPictureData = map[string]string{		
 		"peg_green": "resources/pictures/peg_green.png",
@@ -89,3 +99,23 @@ func (game TakingItInGameData) GetBounds() pixel.Rect {
 	return pixel.R(0, 0, 1200, 960)
 }
 
+// Scoring
+func (game TakingItInGameData) AddCollectedPeg() {
+	game.PegsCollected++
+	game.Score += 5
+}
+
+func (game TakingItInGameData) AddMissedPeg() {
+	game.PegsOnGround++
+	game.Score -= 2
+}
+
+func (game TakingItInGameData) AddCollectedWashing() {
+	game.WashingCollected++
+	game.Score += 40
+}
+
+func (game TakingItInGameData) AddMissedWashing() {
+	game.WashingOnGround++
+	game.Score -= 25
+}

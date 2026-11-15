@@ -12,12 +12,15 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+const GROUND_LEVEL = 20
+
 type TakingItInWashingScene struct {
 	rightHand		*TakingItInHandObject
 	leftHand		*TakingItInHandObject
 	pegs			[]*TakingItInPegObject
 	washing			[]*TakingItInWashingObject
 	basket			*TakingItInBasketObject
+	bucket			*TakingItInBucketObject
 	scoreText		*text.Text
 	timerText		*text.Text
 	gameData		*TakingItInGameData
@@ -52,8 +55,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.KeyJ,
 		pixel.KeyRightShift)
 
-	yPos := scene.GetLinePosY(300, 0)
-	scene.AddWashingAndPegs(game, 300, yPos, .1, "washing_shirt1", []float64{-20, 20})
+	scene.SetupWashingLines(game)
 
 	scene.basket = NewTakingItInBasketObject(
 		game,
@@ -61,6 +63,11 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		"basket_front",
 		pixel.V(200, 50))
 
+	scene.bucket = NewTakingItInBucketObject(
+		game,
+		"bucket_back",
+		"bucket_front",
+		pixel.V(1000, 700))
 
 	scene.scoreText = game.Resources.GenerateTextElement(
 		pixel.V(10, 900), 
@@ -71,19 +78,34 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		"score", 
 		colornames.White)
 
-	scene.imdraw = imdraw.New(nil)
-	scene.imdraw.Color = colornames.Darkslategrey
-	for x := 200; x <= 1000; x += 100 {
-		y := scene.GetLinePosY(float64(x), 0)
-		scene.imdraw.Push(pixel.V(float64(x), y))
-	}
-	scene.imdraw.Line(5.0)
-
 	// Debug
 	scene.posText = game.Resources.GenerateTextElement(
 		pixel.V(900, 800), 
 		"debug", 
 		colornames.Red)
+}
+
+func (scene *TakingItInWashingScene) SetupWashingLines(game *framework.PixelGameController) {
+	itemsPerLine := 4
+
+	for line := 0; line < 1/*5*/; line++ {
+		yPos := float64(850 - (10 * line))
+		xMin := float64(200 - (10 * line))
+		xMax := float64(1000 + (10 * line))
+		itemWidth := (xMax - xMin) / float64(itemsPerLine) 
+		pegOffset := (itemWidth - 40) / 3
+
+		for x := xMin; x < xMax; x += itemWidth {
+			scene.AddWashingAndPegs(game, x + (itemWidth / 2), yPos, 0, "washing_shirt1", []float64{-pegOffset, pegOffset})
+		}
+
+		scene.imdraw = imdraw.New(nil)
+		scene.imdraw.Color = colornames.Darkslategrey
+		scene.imdraw.Push(pixel.V(xMin, yPos))
+		scene.imdraw.Push(pixel.V(xMax, yPos))
+		scene.imdraw.EndShape = imdraw.RoundEndShape
+		scene.imdraw.Line(5.0)
+	}
 }
 
 func (scene *TakingItInWashingScene) AddWashingAndPegs(
@@ -96,6 +118,7 @@ func (scene *TakingItInWashingScene) AddWashingAndPegs(
 
 	washing := NewWashingObject(game, tag, pixel.V(x, y), rotation)
 	scene.washing = append(scene.washing, washing)
+	scene.gameData.TotalWashing++
 
 	for i := 0; i < len(pegOffsets); i++ {
 		rotation := (rand.Float64() - 0.5) * math.Pi / 10
@@ -103,6 +126,7 @@ func (scene *TakingItInWashingScene) AddWashingAndPegs(
 		washing.HeldByPeg(peg)
 		peg.HoldingWashing(washing)
 		scene.pegs = append(scene.pegs, peg)
+		scene.gameData.TotalPegs++
 	}
 }
 
@@ -112,6 +136,7 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 
 	// Draw the Back Of The Basket
 	scene.basket.DrawBack(win)
+	scene.bucket.DrawBack(win)
 
 	// Draw the Line
 	scene.imdraw.Draw(win)
@@ -128,6 +153,9 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 	for i := 0; i < len(scene.pegs); i++ {
 		scene.pegs[i].Draw(win)
 	}
+	
+	// Draw the Front of the Peg Bucket
+	scene.bucket.DrawFront(win)
 
 	// Draw the Hands
 	scene.rightHand.Draw(win)
@@ -156,11 +184,39 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 	scene.leftHand.HandleGripping(scene)
 
 	for i := 0; i < len(scene.pegs); i++ {
-		scene.pegs[i].HandleKey(win, dt)
+		if scene.pegs[i].HandleKey(win, dt) {
+			// Peg hit the ground - is it in a bucket?
+			scene.PegHitGround(scene.pegs[i])
+		}
+		/* if scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
+			scene.pegs[i].Stop()
+			scene.PegHitGround(scene.pegs[i])
+		} */
 	}
 
 	for i := 0; i < len(scene.washing); i++ {
-		scene.washing[i].HandleKey(win, dt)
+		if scene.washing[i].HandleKey(win, dt) {
+			// Washing hit the ground - is it in a bucket?
+			scene.WashingHitGround(scene.washing[i])
+		}
+	}
+}
+
+func (scene *TakingItInWashingScene) PegHitGround(peg *TakingItInPegObject) {
+	if (scene.bucket.CheckInBucket(peg.GetPos())) {
+		// Nice!
+		scene.gameData.AddCollectedPeg()
+	} else {
+		scene.gameData.AddMissedPeg()
+	}
+}
+
+func (scene *TakingItInWashingScene) WashingHitGround(washing *TakingItInWashingObject) {
+	if (scene.basket.CheckInBasket(washing.GetPos())) {
+		// Nice!
+		scene.gameData.AddCollectedWashing()
+	} else {
+		scene.gameData.AddMissedWashing()
 	}
 }
 

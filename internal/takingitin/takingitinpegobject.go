@@ -85,8 +85,8 @@ func (peg *TakingItInPegObject) Draw(win *opengl.Window) {
 	}
 }
 
-func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) {
-	peg.object.UpdatePos(dt, 20)
+func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) bool {
+	return peg.object.UpdatePos(dt, GROUND_LEVEL)
 }
 
 func (peg *TakingItInPegObject) HoldingWashing(washing *TakingItInWashingObject) {
@@ -118,6 +118,10 @@ func (peg *TakingItInPegObject) GetPos() (pixel.Vec) {
 
 func (peg *TakingItInPegObject) SetPos(newPos pixel.Vec) {
 	peg.object.SetPos(newPos)
+}
+
+func (peg *TakingItInPegObject) Stop() {
+	peg.object.HitGround()
 }
 
 func (peg *TakingItInPegObject) GetState() (PegState) {

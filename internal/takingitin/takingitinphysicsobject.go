@@ -10,7 +10,7 @@ import (
 
 const GRAVITY = 400
 const RESTITUTION = 0.5
-const STOPPED_SPEED = 0.1
+const STOPPED_SPEED = 5.0
 const ROTATION_SCALE = 10.0
 
 
@@ -20,6 +20,7 @@ type PhysicsGroundCollisionMode int
 const (
 	PhysicsObjectState_Stopped = iota
 	PhysicsObjectState_Falling
+	PhysicsObjectState_HitGround
 )
 
 const (
@@ -77,7 +78,8 @@ func (obj *TakingItInPhysicsObject) Draw(win *opengl.Window) {
 	obj.sprites[obj.sprite].Draw(win, mat)
 }
 
-func (obj *TakingItInPhysicsObject) UpdatePos(dt float64, groundLevel float64) {
+func (obj *TakingItInPhysicsObject) UpdatePos(dt float64, groundLevel float64) bool {
+	stopped := false
 	if (obj.state == PhysicsObjectState_Falling) {
 		obj.speed.Y -= (GRAVITY * dt)
 		obj.rotation += obj.rotationSpeed * dt * ROTATION_SCALE
@@ -88,39 +90,49 @@ func (obj *TakingItInPhysicsObject) UpdatePos(dt float64, groundLevel float64) {
 				obj.speed.Y = -obj.speed.Y
 				obj.speed = obj.speed.Scaled(RESTITUTION)
 				if obj.speed.Len() < STOPPED_SPEED {
-					obj.Stop()
+					stopped = true
+					obj.HitGround()
+					obj.pos.Y = groundLevel
 				}
 			} else if obj.groundMode == PhysicsGroundCollisionMode_BounceRandom {
 				obj.rotationSpeed = 0.1 * (rand.Float64() - 0.5)
 				origSpeed := obj.speed.Len()
 				obj.speed = pixel.V(1, 0).Rotated(math.Pi * rand.Float64()).Scaled(origSpeed * RESTITUTION)
 				if obj.speed.Len() < STOPPED_SPEED {
-					obj.Stop()
+					stopped = true
+					obj.HitGround()
+					obj.pos.Y = groundLevel
 				}
 			} else {
-				obj.Stop()
+				stopped = true
+				obj.HitGround()
 				obj.pos.Y = groundLevel
 			}
 		} else {
 			obj.pos = obj.pos.Add(obj.speed.Scaled(dt))
 		}
 	}
+	return stopped
 }
 
-func (obj *TakingItInPhysicsObject) Stop() {
-	obj.state = PhysicsObjectState_Stopped
+func (obj *TakingItInPhysicsObject) HitGround() {
+	obj.state = PhysicsObjectState_HitGround
 	obj.speed = pixel.ZV
 	obj.rotationSpeed = 0
 }
 
 func (obj *TakingItInPhysicsObject) Fall(rotationSpeed float64) {
-	obj.rotationSpeed = rotationSpeed
-	obj.state = PhysicsObjectState_Falling
+	if obj.state != PhysicsObjectState_HitGround {
+		obj.rotationSpeed = rotationSpeed
+		obj.state = PhysicsObjectState_Falling
+	}
 }
 
 func (obj *TakingItInPhysicsObject) SetSpeed(speed pixel.Vec) {
-	obj.state = PhysicsObjectState_Falling
-	obj.speed = speed
+	if obj.state != PhysicsObjectState_HitGround {	
+		obj.state = PhysicsObjectState_Falling
+		obj.speed = speed
+	}
 }
 
 func (obj *TakingItInPhysicsObject) SetPos(pos pixel.Vec) {

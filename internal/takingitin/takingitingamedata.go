@@ -50,7 +50,7 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	controller.Resources.AddFont("menutitle", "resources/fonts/notacumulus.ttf", 100)
 	controller.Resources.AddFont("score", "resources/fonts/notacumulus.ttf", 45)
 	controller.Resources.AddFont("keys", "resources/fonts/notacumulus.ttf", 25)
-	controller.Resources.AddFont("debug", "resources/fonts/notacumulus.ttf", 30)
+	controller.Resources.AddFont("debug", "resources/fonts/notacumulus.ttf", 15)
 
 	var pictureData = map[string]string{
 		"menubg": "resources/pictures/stormbg.jpg",

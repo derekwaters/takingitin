@@ -80,7 +80,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 
 	// Debug
 	scene.posText = game.Resources.GenerateTextElement(
-		pixel.V(900, 800), 
+		pixel.V(900, 200), 
 		"debug", 
 		colornames.Red)
 }

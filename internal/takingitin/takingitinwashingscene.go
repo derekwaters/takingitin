@@ -5,6 +5,7 @@ import (
 	"math"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
+	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/gopxl/pixel/v2/ext/text"
 	"github.com/derekwaters/takingitin/internal/framework"
 	"golang.org/x/image/colornames"
@@ -14,10 +15,12 @@ type TakingItInWashingScene struct {
 	rightHand		*TakingItInHandObject
 	leftHand		*TakingItInHandObject
 	pegs			[]*TakingItInPegObject
+	washing			[]*TakingItInWashingObject
 	basket			*TakingItInBasketObject
 	scoreText		*text.Text
 	timerText		*text.Text
 	gameData		*TakingItInGameData
+	imdraw			*imdraw.IMDraw
 
 	// DEBUG
 	posText			*text.Text
@@ -50,6 +53,9 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Green, pixel.V(200, 700), 0))
 	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_Red, pixel.V(300, 700), math.Pi / 2))
 	scene.pegs = append(scene.pegs, NewPegObject(game, PegColour_White, pixel.V(400, 700), .4))
+
+	scene.washing = append(scene.washing, NewWashingObject(game, "washing_shirt1", pixel.V(300, scene.GetLinePosY(300, 0)), 0.0))
+
 	scene.basket = NewTakingItInBasketObject(
 		game,
 		"basket_back",
@@ -66,6 +72,14 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		"score", 
 		colornames.White)
 
+	scene.imdraw = imdraw.New(nil)
+	scene.imdraw.Color = colornames.Darkslategrey
+	for x := 200; x <= 1000; x += 100 {
+		y := scene.GetLinePosY(float64(x), 0)
+		scene.imdraw.Push(pixel.V(float64(x), y))
+	}
+	scene.imdraw.Line(5.0)
+
 	// Debug
 	scene.posText = game.Resources.GenerateTextElement(
 		pixel.V(900, 800), 
@@ -80,7 +94,13 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 	// Draw the Back Of The Basket
 	scene.basket.DrawBack(win)
 
+	// Draw the Line
+	scene.imdraw.Draw(win)
+
 	// Draw The Clothes
+	for i := 0; i < len(scene.washing); i++ {
+		scene.washing[i].Draw(win)
+	}
 
 	// Draw the Front Of The Basket
 	scene.basket.DrawFront(win)
@@ -122,6 +142,10 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 		}
 		scene.pegs[i].HandleKey(win, dt)
 	}
+
+	for i := 0; i < len(scene.washing); i++ {
+		scene.washing[i].HandleKey(win, dt)
+	}
 }
 
 func (scene *TakingItInWashingScene) FindGrabbedPeg(atPos pixel.Vec) (*TakingItInPegObject) {
@@ -132,4 +156,18 @@ func (scene *TakingItInWashingScene) FindGrabbedPeg(atPos pixel.Vec) (*TakingItI
 		}
 	}
 	return nil
+}
+
+func (scene *TakingItInWashingScene) FindGrabbedWashing(atPos pixel.Vec) (*TakingItInWashingObject) {
+
+	for i := 0; i < len(scene.washing); i++ {
+		if scene.washing[i].CheckHit(atPos) {
+			return scene.washing[i]
+		}
+	}
+	return nil
+}
+
+func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float64) {
+	return (0.000125 * (float64(x) - 600.0) * (float64(x) - 600.0)) + 800.0
 }

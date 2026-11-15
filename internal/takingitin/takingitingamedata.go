@@ -58,6 +58,9 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 		"peg_green": "resources/pictures/peg_green.png",
 		"peg_red": "resources/pictures/peg_red.png",
 		"peg_white": "resources/pictures/peg_white.png",
+		"washing_shirt1": "resources/pictures/washing_shirt1.png",
+		"washing_shirt2": "resources/pictures/washing_shirt2.png",
+		"washing_undies1": "resources/pictures/washing_undies1.png",
 	}
 	controller.Resources.AddPictures(pictureData, false)
 	controller.Resources.AddPictures(maskPictureData, true)

@@ -27,7 +27,7 @@ type TakingItInHandObject struct {
 
 	gripOffset			pixel.Vec
 	grippingPeg			*TakingItInPegObject
-	// GrippingClothes		*TakingItInClothesObject
+	grippingWashing		*TakingItInWashingObject
 }
 
 func NewTakingItInHandObject(
@@ -65,6 +65,8 @@ func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
 	imd := imdraw.New(nil)
 	if hand.grippingPeg != nil {
 		imd.Color = pixel.RGB(0, 1, 0)
+	} else if hand.grippingWashing != nil {
+		imd.Color = pixel.RGB(0, 0, 1)
 	} else {
 		imd.Color = pixel.RGB(1, 0, 0)
 	}
@@ -138,13 +140,21 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 	if hand.sprite == (len(hand.sprites) - 1) {
 		// Gripping
 		if hand.grippingPeg != nil {
-			// We already had something, so move it
+			// We already had a peg, so move it
 			hand.grippingPeg.SetPos(hand.pos.Add(hand.gripOffset))
+		} else if hand.grippingWashing != nil {
+			// We already had washing, so move it
+			hand.grippingWashing.SetPos(hand.pos.Add(hand.gripOffset))
 		} else {
 			hand.grippingPeg = scene.FindGrabbedPeg(hand.pos)
 			if hand.grippingPeg != nil {
 				// We got something!
 				hand.gripOffset = hand.pos.Sub(hand.grippingPeg.GetPos())
+			} else {
+				hand.grippingWashing = scene.FindGrabbedWashing(hand.pos)
+				if hand.grippingWashing != nil {
+					hand.gripOffset = hand.pos.Sub(hand.grippingWashing.GetPos())
+				}
 			}
 		}
 	} else {
@@ -152,6 +162,10 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 		if hand.grippingPeg != nil {
 			hand.grippingPeg.Unpeg(hand.speed.X)
 			hand.grippingPeg = nil
+			hand.gripOffset = pixel.ZV
+		} else if hand.grippingWashing != nil {
+			hand.grippingWashing.Unpeg(hand.speed.X / 3)
+			hand.grippingWashing = nil
 			hand.gripOffset = pixel.ZV
 		}
 	}

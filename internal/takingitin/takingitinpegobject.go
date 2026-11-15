@@ -20,7 +20,7 @@ const (
 	PegState_OnTheLine = iota
 	PegState_Falling
 	PegState_OnTheGround
-	PegState_InTheBasket
+	PegState_InTheBucket
 )
 
 const (
@@ -126,6 +126,10 @@ func (peg *TakingItInPegObject) Stop() {
 
 func (peg *TakingItInPegObject) GetState() (PegState) {
 	return peg.pegState
+}
+
+func (peg *TakingItInPegObject) SetState(newState PegState) {
+	peg.pegState = newState
 }
 
 // Note, this pos is in game screen coordinates

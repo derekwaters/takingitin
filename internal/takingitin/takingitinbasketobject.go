@@ -13,7 +13,7 @@ type TakingItInBasketObject struct {
 	backSprite	*pixel.Sprite		
 	frontSprite	*pixel.Sprite
 	pos			pixel.Vec
-	extent		pixel.Rect
+	mask		*framework.PixelPictureMask
 }
 
 func NewTakingItInBasketObject(
@@ -27,8 +27,8 @@ func NewTakingItInBasketObject(
 	}
 	backPic := game.Resources.GetPicture(backSprite)
 	basket.backSprite = pixel.NewSprite(backPic, backPic.Bounds())
-	basket.extent = backPic.Bounds()
 	frontPic := game.Resources.GetPicture(frontSprite)
+	basket.mask = game.Resources.GetMask(frontSprite)
 	basket.frontSprite = pixel.NewSprite(frontPic, frontPic.Bounds())
 	return &basket
 }
@@ -45,6 +45,6 @@ func (basket *TakingItInBasketObject) DrawFront(win *opengl.Window) {
 
 func (basket *TakingItInBasketObject) CheckInBasket(pos pixel.Vec) bool {
 	// Transform pos into the basket image coords
-	checkVec := pos.Sub(basket.pos).Scaled(DEFAULT_BASKET_SCALE)
-	return basket.extent.Contains(checkVec)
+	checkInMask := pos.Sub(basket.pos).Scaled(1.0 / DEFAULT_BASKET_SCALE).Add(basket.mask.GetRect().Center())
+	return basket.mask.GetMask(checkInMask)
 }

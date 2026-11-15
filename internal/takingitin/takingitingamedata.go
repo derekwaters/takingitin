@@ -1,6 +1,7 @@
 package takingitin
 
 import (
+	"fmt"
 	"github.com/gopxl/pixel/v2"
 	"github.com/derekwaters/takingitin/internal/framework"
 	"golang.org/x/image/colornames"
@@ -38,7 +39,7 @@ func NewTakingItInMenuData(controller *framework.PixelGameController) framework.
 	return data
 }
 
-func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
+func (game *TakingItInGameData) Init(controller *framework.PixelGameController) {
 	controller.Log("--- Initialising TakingItIn ---")
 	// Load Resources
 
@@ -59,9 +60,7 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 		"lefthand3": "resources/pictures/hand_l3.png",
 		"lefthand4": "resources/pictures/hand_l4.png",
 
-		"basket_front": "resources/pictures/basket_front.png",
 		"basket_back": "resources/pictures/basket_back.png",
-		"bucket_front": "resources/pictures/bucket_front.png",
 		"bucket_back": "resources/pictures/bucket_back.png",
 	}
 	var maskPictureData = map[string]string{		
@@ -71,6 +70,8 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 		"washing_shirt1": "resources/pictures/washing_shirt1.png",
 		"washing_shirt2": "resources/pictures/washing_shirt2.png",
 		"washing_undies1": "resources/pictures/washing_undies1.png",
+		"basket_front": "resources/pictures/basket_front.png",
+		"bucket_front": "resources/pictures/bucket_front.png",
 	}
 	controller.Resources.AddPictures(pictureData, false)
 	controller.Resources.AddPictures(maskPictureData, true)
@@ -81,8 +82,8 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	var debugScene TakingItInDebugScene
 	var introScene TakingItInIntroScene
 	var washingScene TakingItInWashingScene
-	introScene.SetGameData(&game)
-	washingScene.SetGameData(&game)
+	introScene.SetGameData(game)
+	washingScene.SetGameData(game)
 	controller.AddScene("menu", &menuScene)
 	controller.AddScene("debug", &debugScene)
 	controller.AddScene("about", &debugScene)
@@ -91,31 +92,37 @@ func (game TakingItInGameData) Init(controller *framework.PixelGameController) {
 	controller.AddScene("end", &debugScene)
 }
 
-func (game TakingItInGameData) GetTitle() string {
+func (game *TakingItInGameData) GetTitle() string {
 	return "Taking It In!"
 }
 
-func (game TakingItInGameData) GetBounds() pixel.Rect {
+func (game *TakingItInGameData) GetBounds() pixel.Rect {
 	return pixel.R(0, 0, 1200, 960)
 }
 
 // Scoring
-func (game TakingItInGameData) AddCollectedPeg() {
+func (game *TakingItInGameData) AddCollectedPeg() {
 	game.PegsCollected++
 	game.Score += 5
+	fmt.Println("score is ", game.Score)
 }
 
-func (game TakingItInGameData) AddMissedPeg() {
+func (game *TakingItInGameData) AddMissedPeg() {
 	game.PegsOnGround++
 	game.Score -= 2
+	fmt.Println("score is ", game.Score)
+
 }
 
-func (game TakingItInGameData) AddCollectedWashing() {
+func (game *TakingItInGameData) AddCollectedWashing() {
 	game.WashingCollected++
 	game.Score += 40
+
+	fmt.Println("score is ", game.Score)
 }
 
-func (game TakingItInGameData) AddMissedWashing() {
+func (game *TakingItInGameData) AddMissedWashing() {
 	game.WashingOnGround++
 	game.Score -= 25
+	fmt.Println("score is ", game.Score)
 }

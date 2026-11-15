@@ -128,6 +128,14 @@ func (washing *TakingItInWashingObject) GetState() (WashingState) {
 	return washing.state
 }
 
+func (washing *TakingItInWashingObject) SetState(newState WashingState) {
+	washing.state = newState
+}
+
+func (washing *TakingItInWashingObject) Stop() {
+	washing.object.HitGround()
+}
+
 // Note, this pos is in game screen coordinates
 func (washing *TakingItInWashingObject) CheckHit(atPos pixel.Vec) bool {
 

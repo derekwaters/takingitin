@@ -184,20 +184,30 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 	scene.leftHand.HandleGripping(scene)
 
 	for i := 0; i < len(scene.pegs); i++ {
-		if scene.pegs[i].HandleKey(win, dt) {
-			// Peg hit the ground - is it in a bucket?
-			scene.PegHitGround(scene.pegs[i])
+		if scene.pegs[i].GetState() != PegState_InTheBucket {
+			if scene.pegs[i].HandleKey(win, dt) {
+				// Peg hit the ground - is it in a bucket?
+				scene.PegHitGround(scene.pegs[i])
+			}
+			if scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
+				scene.pegs[i].Stop()
+				scene.pegs[i].SetState(PegState_InTheBucket)
+				scene.PegHitGround(scene.pegs[i])
+			}
 		}
-		/* if scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
-			scene.pegs[i].Stop()
-			scene.PegHitGround(scene.pegs[i])
-		} */
 	}
 
 	for i := 0; i < len(scene.washing); i++ {
-		if scene.washing[i].HandleKey(win, dt) {
-			// Washing hit the ground - is it in a bucket?
-			scene.WashingHitGround(scene.washing[i])
+		if scene.washing[i].GetState() != WashingState_InTheBasket {
+			if scene.washing[i].HandleKey(win, dt) {
+				// Washing hit the ground - is it in a bucket?
+				scene.WashingHitGround(scene.washing[i])
+			}
+			if scene.basket.CheckInBasket(scene.washing[i].GetPos()) {
+				scene.washing[i].Stop()
+				scene.washing[i].SetState(WashingState_InTheBasket)
+				scene.WashingHitGround(scene.washing[i])
+			}
 		}
 	}
 }

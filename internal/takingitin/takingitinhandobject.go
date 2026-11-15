@@ -1,7 +1,6 @@
 package takingitin
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"github.com/gopxl/pixel/v2"
@@ -202,7 +201,6 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 				hand.grippingWashing = scene.FindGrabbedWashing(hand.pos)
 				if hand.grippingWashing != nil {
 					hand.gripOffset = hand.pos.Sub(hand.grippingWashing.GetPos())
-					fmt.Println("handpos", hand.pos, "washingpos", hand.grippingWashing.GetPos(), "offset", hand.gripOffset)
 					hand.washingGripPressure = 0
 				}
 			}

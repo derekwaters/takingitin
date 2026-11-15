@@ -255,4 +255,5 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 }
 
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
+	game.Sounds.StopAll()
 }

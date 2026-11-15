@@ -79,11 +79,11 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	controller.Resources.AddPictures(pictureData, false)
 	controller.Resources.AddPictures(maskPictureData, true)
 
-	//var audioData = map[string]string{
-	//	"menu_loop": "resources/sounds/rain_thunder_loop.wav",
-	//	"menu_button": "resources/sounds/menu_button.wav",
-	//}
-	//controller.Sounds.AddSounds(audioData)
+	var audioData = map[string]string{
+		"menu_loop": "resources/sounds/rain_thunder_loop.wav",
+		"menu_button": "resources/sounds/menu_button.wav",
+	}
+	controller.Sounds.AddSounds(audioData)
 
 	// Create Scenes
 	menuData := NewTakingItInMenuData(controller)

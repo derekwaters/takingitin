@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
-	"github.com/gopxl/pixel/v2/ext/imdraw"
+//	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
@@ -68,17 +68,17 @@ func (hand *TakingItInHandObject) Draw(win *opengl.Window) {
 	hand.sprites[hand.sprite].Draw(win, mat)
 
 	// Debug
-	imd := imdraw.New(nil)
-	if hand.grippingPeg != nil {
-		imd.Color = pixel.RGB(0, 1, 0)
-	} else if hand.grippingWashing != nil {
-		imd.Color = pixel.RGB(0, 0, 1)
-	} else {
-		imd.Color = pixel.RGB(1, 0, 0)
-	}
-	imd.Push(hand.pos)
-	imd.Circle(5, 0)
-	imd.Draw(win)
+	// imd := imdraw.New(nil)
+	// if hand.grippingPeg != nil {
+	// 	imd.Color = pixel.RGB(0, 1, 0)
+	// } else if hand.grippingWashing != nil {
+	// 	imd.Color = pixel.RGB(0, 0, 1)
+	// } else {
+	// 	imd.Color = pixel.RGB(1, 0, 0)
+	// }
+	// imd.Push(hand.pos)
+	// imd.Circle(5, 0)
+	// imd.Draw(win)
 }
 
 func (hand *TakingItInHandObject) HandleKey(win *opengl.Window, dt float64) {

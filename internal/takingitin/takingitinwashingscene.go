@@ -221,9 +221,9 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 	scene.timerText.Draw(win, pixel.IM)
 
 	// Debug
-	scene.posText.Clear()
-	fmt.Fprintf(scene.posText, "Mouse: [%d, %d]", int(win.MousePosition().X), int(win.MousePosition().Y))
-	scene.posText.Draw(win, pixel.IM)
+	// scene.posText.Clear()
+	// fmt.Fprintf(scene.posText, "Mouse: [%d, %d]", int(win.MousePosition().X), int(win.MousePosition().Y))
+	// scene.posText.Draw(win, pixel.IM)
 }
 
 func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {

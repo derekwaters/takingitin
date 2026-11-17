@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/gopxl/pixel/v2"
-	"github.com/gopxl/pixel/v2/ext/imdraw"
+//	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
@@ -76,13 +76,13 @@ func (peg *TakingItInPegObject) Draw(win *opengl.Window) {
 	
 	// DEBUG
 	// Check whether the mouse is on this item
-	if peg.CheckHit(win.MousePosition()) {
-		imd := imdraw.New(nil)
-		imd.Color = pixel.RGB(0, 1, 0)
-		imd.Push(peg.GetPos())
-		imd.Circle(3, 0)
-		imd.Draw(win)
-	}
+	// if peg.CheckHit(win.MousePosition()) {
+	// 	imd := imdraw.New(nil)
+	// 	imd.Color = pixel.RGB(0, 1, 0)
+	// 	imd.Push(peg.GetPos())
+	// 	imd.Circle(3, 0)
+	// 	imd.Draw(win)
+	// }
 }
 
 func (peg *TakingItInPegObject) HandleKey(win *opengl.Window, dt float64) bool {

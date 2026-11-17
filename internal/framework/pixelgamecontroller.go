@@ -24,8 +24,6 @@ type PixelGameController struct {
 	second						<-chan time.Time
 	DebugMode					bool
 
-	// textAtlas					*text.Atlas
-	// debugAtlas					*text.Atlas
 	Resources					*PixelResourceController
 	Sounds						*PixelSoundController
 }

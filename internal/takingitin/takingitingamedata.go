@@ -94,6 +94,7 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	menuData := NewTakingItInMenuData(controller)
 	menuScene := framework.NewPixelMenuScene(menuData)
 	var debugScene TakingItInDebugScene
+	var aboutScene TakingItInAboutScene
 	var introScene TakingItInIntroScene
 	var washingScene TakingItInWashingScene
 	var endScene TakingItInEndScene
@@ -102,7 +103,7 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	endScene.SetGameData(game)
 	controller.AddScene("menu", &menuScene)
 	controller.AddScene("debug", &debugScene)
-	controller.AddScene("about", &debugScene)
+	controller.AddScene("about", &aboutScene)
 	controller.AddScene("intro", &introScene)
 	controller.AddScene("washing", &washingScene)
 	controller.AddScene("end", &endScene)

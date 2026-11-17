@@ -3,7 +3,7 @@ package takingitin
 import (
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
-	"github.com/gopxl/pixel/v2/ext/imdraw"
+//	"github.com/gopxl/pixel/v2/ext/imdraw"
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
@@ -39,15 +39,15 @@ func (bucket *TakingItInBucketObject) DrawBack(win *opengl.Window) {
 
 	// DEBUG
 	// Check whether the mouse is on this item
-	imd := imdraw.New(nil)
-	if bucket.CheckInBucket(win.MousePosition()) {		
-		imd.Color = pixel.RGB(0, 1, 1)
-	} else {
-		imd.Color = pixel.RGB(1, 1, 0)
-	}
-	imd.Push(bucket.pos)
-	imd.Circle(5, 0)
-	imd.Draw(win)
+	// imd := imdraw.New(nil)
+	// if bucket.CheckInBucket(win.MousePosition()) {		
+	// 	imd.Color = pixel.RGB(0, 1, 1)
+	// } else {
+	// 	imd.Color = pixel.RGB(1, 1, 0)
+	// }
+	// imd.Push(bucket.pos)
+	// imd.Circle(5, 0)
+	// imd.Draw(win)
 }
 
 func (bucket *TakingItInBucketObject) DrawFront(win *opengl.Window) {

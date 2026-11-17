@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const GROUND_LEVEL = 20
+const GROUND_LEVEL = 10
 
 type TakingItInWashingScene struct {
 	rightHand		*TakingItInHandObject
@@ -63,7 +63,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		game,
 		"basket_back",
 		"basket_front",
-		pixel.V(200, 0))
+		pixel.V(200, 10))
 
 	scene.bucket = NewTakingItInBucketObject(
 		game,
@@ -236,13 +236,9 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 
 	for i := 0; i < len(scene.pegs); i++ {
 		if scene.pegs[i].GetState() != PegState_InTheBucket {
-			if scene.pegs[i].HandleKey(win, dt) {
+			if scene.pegs[i].HandleKey(win, dt) || 
+				scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
 				// Peg hit the ground - is it in a bucket?
-				scene.PegHitGround(game, scene.pegs[i])
-			}
-			if scene.bucket.CheckInBucket(scene.pegs[i].GetPos()) {
-				scene.pegs[i].Stop()
-				scene.pegs[i].SetState(PegState_InTheBucket)
 				scene.PegHitGround(game, scene.pegs[i])
 			}
 		}
@@ -254,11 +250,6 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 				// Washing hit the ground - is it in a bucket?
 				scene.WashingHitGround(game, scene.washing[i])
 			}
-			if scene.basket.CheckInBasket(scene.washing[i].GetPos()) {
-				scene.washing[i].Stop()
-				scene.washing[i].SetState(WashingState_InTheBasket)
-				scene.WashingHitGround(game, scene.washing[i])
-			}
 		}
 	}
 }
@@ -266,6 +257,8 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 func (scene *TakingItInWashingScene) PegHitGround(game *framework.PixelGameController, peg *TakingItInPegObject) {
 	if (scene.bucket.CheckInBucket(peg.GetPos())) {
 		// Nice!
+		peg.Stop()
+		peg.SetState(PegState_InTheBucket)
 		scene.gameData.AddCollectedPeg()
 	} else {
 		scene.gameData.AddMissedPeg()
@@ -277,10 +270,17 @@ func (scene *TakingItInWashingScene) WashingHitGround(game *framework.PixelGameC
 	game.Sounds.Play(sounds[rand.Intn(len(sounds))])
 	if (scene.basket.CheckInBasket(washing.GetPos())) {
 		// Nice!
+		washing.Stop()
+		washing.SetState(WashingState_InTheBasket)
 		scene.gameData.AddCollectedWashing()
 	} else {
+		washing.Stop()
+		washing.SetState(WashingState_OnTheGround)
 		scene.gameData.AddMissedWashing()
 	}
+
+	// Check to see if the game is over
+	scene.CheckAllWashing(game)
 }
 
 func (scene *TakingItInWashingScene) FindGrabbedPeg(atPos pixel.Vec) (*TakingItInPegObject) {
@@ -310,4 +310,19 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
 	game.Sounds.StopAll()
 	game.Sounds.Loop("washing_bg")
+}
+
+func (scene *TakingItInWashingScene) CheckAllWashing(game *framework.PixelGameController) {
+	for i := 0; i < len(scene.washing); i++ {
+		game.Log("Checking all the washing, item ", i, "state", scene.washing[i].GetState())
+
+		if scene.washing[i].GetState() != WashingState_OnTheGround &&
+			scene.washing[i].GetState() != WashingState_InTheBasket {
+			return
+		}
+	}
+
+	// We're all done
+	game.Log("All Washing Sorted")
+	game.SetScene("end")
 }

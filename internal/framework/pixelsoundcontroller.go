@@ -59,18 +59,15 @@ func (controller *PixelSoundController) AddSound(tag string, path string) error 
 }
 
 func (controller *PixelSoundController) StopAll() {
-	fmt.Println("CLEARING")
 	speaker.Clear()
 }
 
 func (controller *PixelSoundController) Play(tag string) {
-	fmt.Println("HERE WE GO")
 	stream := controller.sounds[tag].Streamer(0, controller.sounds[tag].Len())
 	speaker.Play(stream)
 }
 
 func (controller *PixelSoundController) Loop(tag string) {
-	fmt.Println("HERE WE GO 2")
 	stream := controller.sounds[tag].Streamer(0, controller.sounds[tag].Len())
 	speaker.Play(stream)
 }

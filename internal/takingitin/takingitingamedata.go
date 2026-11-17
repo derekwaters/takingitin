@@ -96,14 +96,16 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 	var debugScene TakingItInDebugScene
 	var introScene TakingItInIntroScene
 	var washingScene TakingItInWashingScene
+	var endScene TakingItInEndScene
 	introScene.SetGameData(game)
 	washingScene.SetGameData(game)
+	endScene.SetGameData(game)
 	controller.AddScene("menu", &menuScene)
 	controller.AddScene("debug", &debugScene)
 	controller.AddScene("about", &debugScene)
 	controller.AddScene("intro", &introScene)
 	controller.AddScene("washing", &washingScene)
-	controller.AddScene("end", &debugScene)
+	controller.AddScene("end", &endScene)
 }
 
 func (game *TakingItInGameData) GetTitle() string {

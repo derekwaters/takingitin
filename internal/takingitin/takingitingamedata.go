@@ -103,7 +103,6 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 		"peg2": "resources/sounds/peg_noise2.wav",
 		"peg3": "resources/sounds/peg_noise3.wav",
 		"peg4": "resources/sounds/peg_noise4.wav",
-		"washing_bg": "resources/sounds/washing_bg.wav",
 	}
 	controller.Sounds.AddSounds(audioData)
 
@@ -138,25 +137,19 @@ func (game *TakingItInGameData) GetBounds() pixel.Rect {
 func (game *TakingItInGameData) AddCollectedPeg() {
 	game.PegsCollected++
 	game.Score += 5
-	fmt.Println("score is ", game.Score)
 }
 
 func (game *TakingItInGameData) AddMissedPeg() {
 	game.PegsOnGround++
 	game.Score -= 2
-	fmt.Println("score is ", game.Score)
-
 }
 
 func (game *TakingItInGameData) AddCollectedWashing() {
 	game.WashingCollected++
 	game.Score += 40
-
-	fmt.Println("score is ", game.Score)
 }
 
 func (game *TakingItInGameData) AddMissedWashing() {
 	game.WashingOnGround++
 	game.Score -= 25
-	fmt.Println("score is ", game.Score)
 }

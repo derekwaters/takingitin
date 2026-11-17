@@ -33,8 +33,6 @@ func (controller *PixelSoundController) AddSounds(defs map[string]string) error 
 }
 
 func (controller *PixelSoundController) AddSound(tag string, path string) error {
-	fmt.Println("Loading", path)
-
 	f, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -49,7 +47,6 @@ func (controller *PixelSoundController) AddSound(tag string, path string) error 
 	streamer.Close()
 
 	if !controller.speakerInitialised {
-		fmt.Println("speaker inited")
 		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 		controller.speakerInitialised = true
 	}
@@ -69,5 +66,5 @@ func (controller *PixelSoundController) Play(tag string) {
 
 func (controller *PixelSoundController) Loop(tag string) {
 	stream := controller.sounds[tag].Streamer(0, controller.sounds[tag].Len())
-	speaker.Play(stream)
+	speaker.Play(beep.Loop(-1, stream))
 }

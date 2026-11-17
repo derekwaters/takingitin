@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gopxl/pixel/v2"
+	//"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/backends/opengl"
 	// "github.com/gopxl/pixel/v2/ext/text"
 )
@@ -107,9 +107,9 @@ func (game *PixelGameController) DoRun() {
 		game.Scenes[game.CurrentScene].Render(game, win, dt)
 		
 		// Handle escape
-		if win.JustPressed(pixel.KeyEscape) {
-			win.SetClosed(true)
-		}
+		//if win.JustPressed(pixel.KeyEscape) {
+		//	win.SetClosed(true)
+		//}
 
 		win.Update()
 	}

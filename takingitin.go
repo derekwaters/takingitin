@@ -12,7 +12,7 @@ func main() {
 	var theData takingitin.TakingItInGameData
 	var theGame framework.PixelGameController
 	fmt.Println("--- Launching The Game ---")
-	theGame.DebugMode = true
+	theGame.DebugMode = false
 	theGame.Launch(&theData)
 
 	fmt.Println("---  Ending The Game  ---")

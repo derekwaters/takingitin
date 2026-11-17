@@ -98,6 +98,9 @@ func (scene *PixelMenuScene) HandleKey(game *PixelGameController, win *opengl.Wi
 			return;
 		}
 	}
+	if win.JustPressed(pixel.KeyEscape) {
+		win.SetClosed(true)
+	}
 }
 
 func (scene *PixelMenuScene) OnShowScene(game *PixelGameController) {

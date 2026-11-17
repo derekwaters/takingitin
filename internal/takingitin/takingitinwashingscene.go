@@ -261,6 +261,11 @@ func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameControll
 			}
 		}
 	}
+
+	if (win.JustPressed(pixel.KeyEscape)) {
+		game.Log("User Quit")
+		game.SetScene("end")
+	}
 }
 
 func (scene *TakingItInWashingScene) PegHitGround(game *framework.PixelGameController, peg *TakingItInPegObject) {
@@ -315,8 +320,6 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 }
 
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
-	game.Sounds.StopAll()
-	game.Sounds.Play("menu_loop")
 	scene.gameData.Reset(30.0)
 
 	// Reset the hand positions

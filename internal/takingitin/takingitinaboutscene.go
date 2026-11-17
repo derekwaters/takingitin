@@ -54,7 +54,8 @@ func (scene *TakingItInAboutScene) Render(game *framework.PixelGameController, w
 }
 
 func (scene *TakingItInAboutScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
-	if win.JustPressed(pixel.KeyEnter) {
+	if win.JustPressed(pixel.KeyEnter) ||
+		win.JustPressed(pixel.KeyEscape) {
 		game.SetScene("menu")
 	}
 }

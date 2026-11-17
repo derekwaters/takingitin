@@ -65,6 +65,7 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 
 		"basket_back": "resources/pictures/basket_back.png",
 		"bucket_back": "resources/pictures/bucket_back.png",
+		"washing_bg": "resources/pictures/washing_bg.png",
 	}
 	var maskPictureData = map[string]string{		
 		"peg_green": "resources/pictures/peg_green.png",

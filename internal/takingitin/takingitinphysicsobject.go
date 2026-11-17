@@ -8,7 +8,7 @@ import (
 	"github.com/derekwaters/takingitin/internal/framework"
 )
 
-const GRAVITY = 400
+const GRAVITY = 800
 const RESTITUTION = 0.5
 const STOPPED_SPEED = 5.0
 const ROTATION_SCALE = 10.0

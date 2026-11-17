@@ -25,6 +25,8 @@ type TakingItInWashingScene struct {
 	timerText		*text.Text
 	gameData		*TakingItInGameData
 	imdraw			*imdraw.IMDraw
+	bgSprite		*pixel.Sprite
+	bgBounds		pixel.Rect
 
 	// DEBUG
 	posText			*text.Text
@@ -61,18 +63,18 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		game,
 		"basket_back",
 		"basket_front",
-		pixel.V(200, 50))
+		pixel.V(200, 0))
 
 	scene.bucket = NewTakingItInBucketObject(
 		game,
 		"bucket_back",
 		"bucket_front",
-		pixel.V(1000, 700))
+		pixel.V(1120, 610))
 
 	scene.scoreText = game.Resources.GenerateTextElement(
-		pixel.V(10, 900), 
+		pixel.V(40, 900), 
 		"score", 
-		colornames.White)
+		colornames.Darkslategrey)
 	scene.timerText = game.Resources.GenerateTextElement(
 		pixel.V(800, 900), 
 		"score", 
@@ -83,16 +85,24 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.V(900, 200), 
 		"debug", 
 		colornames.Red)
+
+	bgImage := game.Resources.GetPicture("washing_bg")
+	if bgImage != nil {
+		scene.bgBounds = bgImage.Bounds()
+		scene.bgSprite = pixel.NewSprite(bgImage, scene.bgBounds)
+	}
 }
 
 func (scene *TakingItInWashingScene) SetupWashingLines(game *framework.PixelGameController) {
 	itemsPerLine := 4
+	spaceForBucket := 80.0
 
 	for line := 0; line < 1/*5*/; line++ {
-		yPos := float64(850 - (10 * line))
-		xMin := float64(200 - (10 * line))
-		xMax := float64(1000 + (10 * line))
-		itemWidth := (xMax - xMin) / float64(itemsPerLine) 
+		yPos := float64(720 - (10 * line))
+		xMin := float64(0 + (10 * line))
+		xMax := float64(1200 - (10 * line))
+
+		itemWidth := (xMax - xMin - spaceForBucket) / float64(itemsPerLine) 
 		pegOffset := (itemWidth - 40) / 3
 
 		for x := xMin; x < xMax; x += itemWidth {
@@ -132,7 +142,12 @@ func (scene *TakingItInWashingScene) AddWashingAndPegs(
 
 func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController, win *opengl.Window, dt float64) {
 	// Draw the Background
-	win.Clear(colornames.Green)
+	// win.Clear(colornames.Green)
+
+	if scene.bgSprite != nil {
+		scaleFactor := win.Bounds().H() / scene.bgBounds.H()
+		scene.bgSprite.Draw(win, pixel.IM.Scaled(pixel.V(0.0, 0.0), scaleFactor).Moved(win.Bounds().Center()))
+	}
 
 	// Draw the Back Of The Basket
 	scene.basket.DrawBack(win)

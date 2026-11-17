@@ -180,7 +180,7 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 
 	if scene.bgSprite != nil {
 
-		maskAlpha := 0.6 + (0.4 * scene.gameData.TimeRemaining / scene.gameData.TotalTime)
+		maskAlpha := 0.4 + (0.6 * scene.gameData.TimeRemaining / scene.gameData.TotalTime)
 		mask := pixel.RGB(maskAlpha, maskAlpha, maskAlpha)
 
 		scaleFactor := win.Bounds().H() / scene.bgBounds.H()
@@ -320,7 +320,7 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 }
 
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
-	scene.gameData.Reset(30.0)
+	scene.gameData.Reset(60.0)
 
 	// Reset the hand positions
 	scene.leftHand.Reset(pixel.V(200, 140))

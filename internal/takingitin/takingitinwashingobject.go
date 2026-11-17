@@ -45,7 +45,8 @@ func NewWashingObject(
 		pixel.ZV,
 		startRotation,
 		0,
-		PhysicsGroundCollisionMode_Stop)
+		PhysicsGroundCollisionMode_Stop,
+		[]string{"washing1", "washing2", "washing3"})
 
 	washing := TakingItInWashingObject{
 		object: physObj,

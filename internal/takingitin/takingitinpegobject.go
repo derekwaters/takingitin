@@ -59,13 +59,14 @@ func NewPegObject(
 		pixel.ZV,
 		startRotation,
 		0,
-		PhysicsGroundCollisionMode_BounceRandom)
-
+		PhysicsGroundCollisionMode_BounceRandom,
+		[]string{"peg1", "peg2", "peg3", "peg4"})
 	peg := TakingItInPegObject{
 		object: physObj,
 		pegState: PegState_OnTheLine,
 		pegColour: colour,
 	}
+
 	peg.mask = game.Resources.GetMask(PegColourName[colour])
 	return &peg
 }

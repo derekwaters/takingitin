@@ -28,9 +28,9 @@ a game written for the
 itch.io "Hand Crafted Jam".
 Thanks to Dylan for the jam!
 
-Idea: Angus Waters
-Tactile: Angus' actual hands
-Hand Crafted: Derek Waters
+Idea By: Angus
+Tactile By: Angus' actual hands
+Hand Crafted By: Derek
 Background Noises: Nox Sound
 Sound Effects: Film Cow
 Fonts: Chequered Ink`)

@@ -218,3 +218,12 @@ func (hand *TakingItInHandObject) HandleGripping(scene *TakingItInWashingScene) 
 		}
 	}
 }
+
+func (hand *TakingItInHandObject) Reset(pos pixel.Vec) {
+	hand.pos = pos
+	hand.speed = pixel.ZV
+	hand.sprite = 0
+	hand.grippingPeg = nil
+	hand.grippingWashing = nil
+	hand.gripOffset = pixel.ZV
+}

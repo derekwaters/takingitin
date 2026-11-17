@@ -57,8 +57,6 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		pixel.KeyJ,
 		pixel.KeyRightShift)
 
-	scene.SetupWashingLines(game)
-
 	scene.basket = NewTakingItInBasketObject(
 		game,
 		"basket_back",
@@ -76,7 +74,7 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 		"score", 
 		colornames.Darkslategrey)
 	scene.timerText = game.Resources.GenerateTextElement(
-		pixel.V(800, 900), 
+		pixel.V(900, 900), 
 		"score", 
 		colornames.White)
 
@@ -181,8 +179,12 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 	// win.Clear(colornames.Green)
 
 	if scene.bgSprite != nil {
+
+		maskAlpha := 0.6 + (0.4 * scene.gameData.TimeRemaining / scene.gameData.TotalTime)
+		mask := pixel.RGB(maskAlpha, maskAlpha, maskAlpha)
+
 		scaleFactor := win.Bounds().H() / scene.bgBounds.H()
-		scene.bgSprite.Draw(win, pixel.IM.Scaled(pixel.V(0.0, 0.0), scaleFactor).Moved(win.Bounds().Center()))
+		scene.bgSprite.DrawColorMask(win, pixel.IM.Scaled(pixel.V(0.0, 0.0), scaleFactor).Moved(win.Bounds().Center()), mask)
 	}
 
 	// Draw the Back Of The Basket
@@ -217,7 +219,7 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 	fmt.Fprintf(scene.scoreText, "Score: %d", scene.gameData.Score)
 	scene.scoreText.Draw(win, pixel.IM)
 	scene.timerText.Clear()
-	fmt.Fprintf(scene.timerText, "Time: %d", scene.gameData.TimeRemaining)
+	fmt.Fprintf(scene.timerText, "Time: %.1f", scene.gameData.TimeRemaining)
 	scene.timerText.Draw(win, pixel.IM)
 
 	// Debug
@@ -227,6 +229,13 @@ func (scene *TakingItInWashingScene) Render(game *framework.PixelGameController,
 }
 
 func (scene *TakingItInWashingScene) HandleKey(game *framework.PixelGameController, win *opengl.Window, dt float64) {
+	scene.gameData.TimeRemaining -= dt
+	if scene.gameData.TimeRemaining <= 0.0 {
+		game.Log("Outta time")
+		game.SetScene("end")
+	}
+
+
 	scene.rightHand.HandleKey(win, dt)
 	scene.leftHand.HandleKey(win, dt)
 
@@ -266,8 +275,6 @@ func (scene *TakingItInWashingScene) PegHitGround(game *framework.PixelGameContr
 }
 
 func (scene *TakingItInWashingScene) WashingHitGround(game *framework.PixelGameController, washing *TakingItInWashingObject) {
-	sounds := []string{"washing1", "washing2", "washing3"}
-	game.Sounds.Play(sounds[rand.Intn(len(sounds))])
 	if (scene.basket.CheckInBasket(washing.GetPos())) {
 		// Nice!
 		washing.Stop()
@@ -309,7 +316,16 @@ func (scene *TakingItInWashingScene) GetLinePosY(x float64, line float64) (float
 
 func (scene *TakingItInWashingScene) OnShowScene(game *framework.PixelGameController) {
 	game.Sounds.StopAll()
-	game.Sounds.Loop("washing_bg")
+	game.Sounds.Play("menu_loop")
+	scene.gameData.Reset(30.0)
+
+	// Reset the hand positions
+	scene.leftHand.Reset(pixel.V(200, 140))
+	scene.rightHand.Reset(pixel.V(1000, 140))
+	scene.washing = make([]*TakingItInWashingObject, 0, 0)
+	scene.pegs = make([]*TakingItInPegObject, 0, 0)
+
+	scene.SetupWashingLines(game)
 }
 
 func (scene *TakingItInWashingScene) CheckAllWashing(game *framework.PixelGameController) {

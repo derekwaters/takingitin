@@ -43,7 +43,10 @@ type TakingItInPhysicsObject struct {
 
 	defaultScale	float64
 
-	groundMode	PhysicsGroundCollisionMode
+	groundMode		PhysicsGroundCollisionMode
+
+	bounceNoises	[]string
+	game 			*framework.PixelGameController
 }
 
 func NewTakingItInPhysicsObject(
@@ -54,7 +57,8 @@ func NewTakingItInPhysicsObject(
 	startSpeed pixel.Vec,
 	startRotation float64,
 	startRotationSpeed float64,
-	groundMode PhysicsGroundCollisionMode) (*TakingItInPhysicsObject) {
+	groundMode PhysicsGroundCollisionMode,
+	bounceNoises []string) (*TakingItInPhysicsObject) {
 
 	obj := TakingItInPhysicsObject{
 		pos: startPos,
@@ -64,6 +68,8 @@ func NewTakingItInPhysicsObject(
 		rotation: startRotation,
 		rotationSpeed: startRotationSpeed,
 		groundMode: groundMode,
+		bounceNoises: bounceNoises,
+		game: game,
 	}
 	for i := 0; i < len(spriteNames); i++ {
 		pic := game.Resources.GetPicture(spriteNames[i])
@@ -86,6 +92,7 @@ func (obj *TakingItInPhysicsObject) UpdatePos(dt float64, groundLevel float64) b
 
 		// If the object would have hit the ground, then bounce it
 		if (obj.pos.Y + (obj.speed.Y * dt)) < groundLevel {
+			obj.game.Sounds.Play(obj.bounceNoises[rand.Intn(len(obj.bounceNoises))])
 			if obj.groundMode == PhysicsGroundCollisionMode_BounceDirect {
 				obj.speed.Y = -obj.speed.Y
 				obj.speed = obj.speed.Scaled(RESTITUTION)

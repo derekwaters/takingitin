@@ -9,7 +9,8 @@ import (
 
 type TakingItInGameData struct {
 	Score			int
-	TimeRemaining	int
+	TotalTime		float64
+	TimeRemaining	float64
 
 	PegsCollected	int
 	PegsOnGround	int
@@ -18,6 +19,18 @@ type TakingItInGameData struct {
 	WashingCollected	int
 	WashingOnGround		int
 	TotalWashing		int
+}
+
+func (data *TakingItInGameData) Reset(time float64) {
+	data.TotalTime = time
+	data.TimeRemaining = time
+	data.Score = 0
+	data.PegsCollected = 0
+	data.PegsOnGround = 0
+	data.TotalPegs = 0
+	data.WashingCollected = 0
+	data.WashingOnGround = 0
+	data.TotalWashing = 0
 }
 
 func NewTakingItInMenuData(controller *framework.PixelGameController) framework.PixelMenuData {
@@ -86,6 +99,10 @@ func (game *TakingItInGameData) Init(controller *framework.PixelGameController) 
 		"washing1": "resources/sounds/washing_noise1.wav",
 		"washing2": "resources/sounds/washing_noise2.wav",
 		"washing3": "resources/sounds/washing_noise3.wav",
+		"peg1": "resources/sounds/peg_noise1.wav",
+		"peg2": "resources/sounds/peg_noise2.wav",
+		"peg3": "resources/sounds/peg_noise3.wav",
+		"peg4": "resources/sounds/peg_noise4.wav",
 		"washing_bg": "resources/sounds/washing_bg.wav",
 	}
 	controller.Sounds.AddSounds(audioData)

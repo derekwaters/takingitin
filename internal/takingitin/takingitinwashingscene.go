@@ -93,20 +93,55 @@ func (scene *TakingItInWashingScene) Init(game *framework.PixelGameController) {
 	}
 }
 
+type washingDef struct {
+	label	string
+	width	float64
+	pegs	[]float64
+}
+
+func newWashingDef(label string, width float64, pegs []float64) (washingDef) {
+	return washingDef{
+		label: label,
+		width: width,
+		pegs: pegs,
+	}
+}
+
 func (scene *TakingItInWashingScene) SetupWashingLines(game *framework.PixelGameController) {
-	itemsPerLine := 4
+
+	clothesTypes := make([]washingDef, 0, 3)
+	clothesTypes = append(clothesTypes, newWashingDef("washing_shirt1", 400.0, []float64{-160.0, 150.0}))
+	clothesTypes = append(clothesTypes, newWashingDef("washing_shirt2", 400.0, []float64{-142.0, 157.0}))
+	clothesTypes = append(clothesTypes, newWashingDef("washing_undies1", 160.0, []float64{21.0}))
+
+	game.Log(clothesTypes)
+
 	spaceForBucket := 80.0
+	spaceBetweenItems := 20.0
 
 	for line := 0; line < 1/*5*/; line++ {
 		yPos := float64(720 - (10 * line))
 		xMin := float64(0 + (10 * line))
 		xMax := float64(1200 - (10 * line))
+		washingScale := 0.4 - (0.02 * float64(line))
 
-		itemWidth := (xMax - xMin - spaceForBucket) / float64(itemsPerLine) 
-		pegOffset := (itemWidth - 40) / 3
+		for x := xMin + spaceBetweenItems; x < xMax - spaceForBucket; {
+			itemType := rand.Intn(len(clothesTypes))
+			item := clothesTypes[itemType]
 
-		for x := xMin; x < xMax; x += itemWidth {
-			scene.AddWashingAndPegs(game, x + (itemWidth / 2), yPos, 0, "washing_shirt1", []float64{-pegOffset, pegOffset})
+			theItemWidth := item.width * washingScale;
+
+			if x + theItemWidth < xMax - spaceForBucket {
+
+				var pegOffsets []float64
+				for q := 0; q < len(item.pegs); q++ {
+					pegOffsets = append(pegOffsets, item.pegs[q] * washingScale)
+				}
+				game.Log("Adding a ", item.label, "with width", theItemWidth, itemType)
+				scene.AddWashingAndPegs(game, x + theItemWidth / 2, yPos, 0, item.label, pegOffsets)
+			}
+
+			x += theItemWidth + spaceBetweenItems
 		}
 
 		scene.imdraw = imdraw.New(nil)
@@ -126,13 +161,14 @@ func (scene *TakingItInWashingScene) AddWashingAndPegs(
 	tag string, 
 	pegOffsets []float64) {
 
-	washing := NewWashingObject(game, tag, pixel.V(x, y), rotation)
+	washing := NewWashingObject(game, tag, pixel.V(x, y), rotation, 0.4)
 	scene.washing = append(scene.washing, washing)
 	scene.gameData.TotalWashing++
 
 	for i := 0; i < len(pegOffsets); i++ {
 		rotation := (rand.Float64() - 0.5) * math.Pi / 10
-		peg := NewPegObject(game, PegColour_White, pixel.V(x + pegOffsets[i], y), rotation)
+		pegColour := PegColour(rand.Intn(int(PegColour_Green) + 1))
+		peg := NewPegObject(game, pegColour, pixel.V(x + pegOffsets[i], y), rotation)
 		washing.HeldByPeg(peg)
 		peg.HoldingWashing(washing)
 		scene.pegs = append(scene.pegs, peg)

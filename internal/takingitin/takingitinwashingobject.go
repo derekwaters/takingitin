@@ -30,10 +30,8 @@ func NewWashingObject(
 	game *framework.PixelGameController,
 	item string,
 	startPos pixel.Vec,
-	startRotation float64) (*TakingItInWashingObject) {
-
-	// scale := 0.35 + (rand.Float64() * 0.1)
-	scale := 0.4
+	startRotation float64,
+	scale float64) (*TakingItInWashingObject) {
 
 	pic := game.Resources.GetPicture(item)
 	yOff := (pic.Bounds().H() / 2) * scale

@@ -1,7 +1,7 @@
 package takingitin
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/gopxl/pixel/v2"
 	"github.com/derekwaters/takingitin/internal/framework"
 	"golang.org/x/image/colornames"
